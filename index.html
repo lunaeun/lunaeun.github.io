@@ -1,0 +1,2322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt Atelier — AI 활용 CS 포트폴리오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Sans+KR:wght@300;400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #faf7f5;
+  --bg-secondary: #f3ece8;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fdf9f7;
+  --text-primary: #2d2438;
+  --text-secondary: #6b5c7a;
+  --text-muted: #9b8ea8;
+  --accent-rose: #c4728f;
+  --accent-rose-light: #e8a4b8;
+  --accent-rose-pale: #f5dde5;
+  --accent-plum: #7b5ea7;
+  --accent-plum-light: #a88ec4;
+  --accent-plum-pale: #e8ddf2;
+  --accent-mauve: #9e7bb5;
+  --accent-ivory: #f9f3ee;
+  --accent-gold: #c9a96e;
+  --border-light: #e8dfe4;
+  --border-medium: #d4c6d0;
+  --shadow-soft: 0 2px 12px rgba(123, 94, 167, 0.08);
+  --shadow-medium: 0 4px 24px rgba(123, 94, 167, 0.12);
+  --shadow-strong: 0 8px 40px rgba(123, 94, 167, 0.16);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Noto Sans KR', sans-serif;
+  --font-mono: 'Source Code Pro', monospace;
+
+  /* AI Colors */
+  --claude-color: #c4728f;
+  --gpt-color: #6ba89a;
+  --gemini-color: #7b8ec4;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════
+   BACKGROUND TEXTURE
+   ═══════════════════════════════════════ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(196, 114, 143, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(123, 94, 167, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(201, 169, 110, 0.03) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════════════════════════════════
+   HEADER / NAV
+   ═══════════════════════════════════════ */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(250, 247, 245, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-light);
+  padding: 0 40px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--accent-rose), var(--accent-plum));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  align-self: center;
+}
+
+.logo-text {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.logo-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-btn {
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-btn:hover {
+  border-color: var(--accent-rose);
+  color: var(--accent-rose);
+  background: var(--accent-rose-pale);
+}
+
+.nav-btn.primary {
+  background: linear-gradient(135deg, var(--accent-rose), var(--accent-plum));
+  color: white;
+  border: none;
+}
+
+.nav-btn.primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+.search-box {
+  position: relative;
+  width: 240px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px 16px 10px 36px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-primary);
+  outline: none;
+  transition: var(--transition);
+}
+
+.search-box input:focus {
+  border-color: var(--accent-mauve);
+  box-shadow: 0 0 0 3px rgba(158, 123, 181, 0.1);
+}
+
+.search-box input::placeholder { color: var(--text-muted); }
+
+.search-box .search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* ═══════════════════════════════════════
+   FILTER BAR
+   ═══════════════════════════════════════ */
+.filter-bar {
+  padding: 16px 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border-light);
+  background: rgba(250, 247, 245, 0.5);
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.filter-chip {
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-card);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.filter-chip:hover {
+  border-color: var(--accent-mauve);
+  color: var(--accent-plum);
+}
+
+.filter-chip.active {
+  background: var(--accent-plum);
+  color: white;
+  border-color: var(--accent-plum);
+}
+
+.filter-chip.claude.active { background: var(--claude-color); border-color: var(--claude-color); }
+.filter-chip.gpt.active { background: var(--gpt-color); border-color: var(--gpt-color); }
+.filter-chip.gemini.active { background: var(--gemini-color); border-color: var(--gemini-color); }
+
+.filter-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-light);
+  margin: 0 4px;
+}
+
+.item-count {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════
+   MAIN GRID — 6×5
+   ═══════════════════════════════════════ */
+.main-content {
+  position: relative;
+  z-index: 1;
+  padding: 28px 40px 60px;
+}
+
+.prompt-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 18px;
+}
+
+/* ═══════════════════════════════════════
+   PROMPT CARD
+   ═══════════════════════════════════════ */
+.prompt-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  min-height: 180px;
+  position: relative;
+  overflow: hidden;
+}
+
+.prompt-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-rose), var(--accent-plum));
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.prompt-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-strong);
+  border-color: var(--accent-rose-light);
+}
+
+.prompt-card:hover::before { opacity: 1; }
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.ai-badge {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.ai-badge.claude { background: rgba(196, 114, 143, 0.12); color: var(--claude-color); }
+.ai-badge.gpt { background: rgba(107, 168, 154, 0.12); color: var(--gpt-color); }
+.ai-badge.gemini { background: rgba(123, 142, 196, 0.12); color: var(--gemini-color); }
+.ai-badge.case { background: rgba(123, 94, 167, 0.12); color: var(--accent-plum); }
+.ai-badge.webapp { background: rgba(201, 169, 110, 0.12); color: var(--accent-gold); }
+
+.card-menu-btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.card-menu-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+}
+
+.card-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.card-tag {
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--bg-secondary);
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.card-date {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* ADD NEW CARD */
+.prompt-card.add-new {
+  border: 2px dashed var(--border-medium);
+  background: transparent;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 180px;
+}
+
+.prompt-card.add-new:hover {
+  border-color: var(--accent-rose);
+  background: rgba(196, 114, 143, 0.04);
+  transform: translateY(-2px);
+  box-shadow: none;
+}
+
+.prompt-card.add-new::before { display: none; }
+
+.add-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-rose-pale);
+  color: var(--accent-rose);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transition: var(--transition);
+}
+
+.prompt-card.add-new:hover .add-icon {
+  background: var(--accent-rose);
+  color: white;
+}
+
+.add-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════
+   MODAL — ADD/EDIT
+   ═══════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(45, 36, 56, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+
+.modal {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 680px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-strong);
+  position: relative;
+}
+
+.modal-header {
+  padding: 28px 32px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.modal-close {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-light);
+  border-radius: 50%;
+  background: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: var(--transition);
+}
+
+.modal-close:hover {
+  background: var(--bg-secondary);
+  color: var(--accent-rose);
+}
+
+.modal-body {
+  padding: 24px 32px 32px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  outline: none;
+  transition: var(--transition);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--accent-mauve);
+  box-shadow: 0 0 0 3px rgba(158, 123, 181, 0.1);
+}
+
+.form-textarea {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  resize: vertical;
+  min-height: 200px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-tags-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  min-height: 44px;
+  align-items: center;
+  cursor: text;
+}
+
+.form-tags-input:focus-within {
+  border-color: var(--accent-mauve);
+  box-shadow: 0 0 0 3px rgba(158, 123, 181, 0.1);
+}
+
+.form-tags-input input {
+  border: none;
+  background: none;
+  outline: none;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-primary);
+  flex: 1;
+  min-width: 80px;
+}
+
+.tag-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: var(--accent-plum-pale);
+  color: var(--accent-plum);
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.tag-item .remove-tag {
+  cursor: pointer;
+  opacity: 0.6;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.tag-item .remove-tag:hover { opacity: 1; }
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+.btn {
+  padding: 11px 24px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-secondary {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+}
+
+.btn-secondary:hover { background: var(--border-light); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-rose), var(--accent-plum));
+  color: white;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+.btn-danger {
+  background: #f5e0e0;
+  color: #b44;
+}
+
+.btn-danger:hover { background: #ecc; }
+
+/* ═══════════════════════════════════════
+   FILE UPLOAD AREA
+   ═══════════════════════════════════════ */
+.upload-zone {
+  border: 2px dashed var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+  background: var(--bg-primary);
+}
+
+.upload-zone:hover,
+.upload-zone.dragover {
+  border-color: var(--accent-rose);
+  background: rgba(196, 114, 143, 0.04);
+}
+
+.upload-zone-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.upload-zone-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.upload-zone-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════
+   SUB PAGE — DETAIL VIEW
+   ═══════════════════════════════════════ */
+.sub-page {
+  display: none;
+  position: relative;
+  z-index: 1;
+}
+
+.sub-page.active { display: block; }
+.main-page.hidden { display: none; }
+
+.detail-header {
+  padding: 32px 40px 24px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  margin-bottom: 20px;
+}
+
+.back-btn:hover { color: var(--accent-rose); }
+
+.detail-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.detail-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.detail-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.detail-body {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 32px;
+  padding: 32px 40px;
+}
+
+.prompt-content-area {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.prompt-content-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.prompt-content-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.copy-btn {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-card);
+  font-size: 11px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font-body);
+}
+
+.copy-btn:hover {
+  border-color: var(--accent-rose);
+  color: var(--accent-rose);
+}
+
+.prompt-content-body {
+  padding: 20px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* SIDEBAR */
+.detail-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.sidebar-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 13px;
+}
+
+.info-row:last-child { border-bottom: none; }
+.info-label { color: var(--text-muted); }
+.info-value { color: var(--text-primary); font-weight: 500; }
+
+/* AI CONVERT */
+.convert-section {
+  margin-top: 4px;
+}
+
+.convert-btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.convert-btn {
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  background: var(--bg-primary);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+}
+
+.convert-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+
+.convert-btn.claude:hover { border-color: var(--claude-color); color: var(--claude-color); }
+.convert-btn.gpt:hover { border-color: var(--gpt-color); color: var(--gpt-color); }
+.convert-btn.gemini:hover { border-color: var(--gemini-color); color: var(--gemini-color); }
+
+.convert-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.convert-dot.claude { background: var(--claude-color); }
+.convert-dot.gpt { background: var(--gpt-color); }
+.convert-dot.gemini { background: var(--gemini-color); }
+
+/* CONVERT RESULT */
+.convert-result {
+  display: none;
+  margin-top: 12px;
+}
+
+.convert-result.active { display: block; }
+
+.convert-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.convert-result-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-plum);
+}
+
+.convert-result-body {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* ═══════════════════════════════════════
+   UPLOAD MODAL
+   ═══════════════════════════════════════ */
+#uploadModal .modal { max-width: 520px; }
+
+/* ═══════════════════════════════════════
+   PREVIEW MODAL
+   ═══════════════════════════════════════ */
+#previewModal .modal {
+  max-width: 900px;
+  width: 95vw;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+#previewModal .modal-body {
+  flex: 1;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+.preview-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+.preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-light);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.preview-url {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60%;
+}
+.preview-open-btn {
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: var(--accent-plum);
+  color: white;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.preview-open-btn:hover { opacity: 0.85; }
+
+/* ═══════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════ */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  padding: 14px 20px;
+  background: var(--text-primary);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: var(--shadow-strong);
+  animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@keyframes toastIn { from { opacity: 0; transform: translateY(12px); } }
+@keyframes toastOut { to { opacity: 0; transform: translateY(-12px); } }
+
+/* ═══════════════════════════════════════
+   EMPTY STATE
+   ═══════════════════════════════════════ */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.empty-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.empty-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════
+   SCROLLBAR
+   ═══════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ═══════════════════════════════════════
+   PROFILE HERO (v2)
+   ═══════════════════════════════════════ */
+.hero { padding: 36px 40px 8px; position: relative; z-index: 1; }
+.hero-inner { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); padding: 28px 32px; }
+.hero-kicker { font-size: 12px; letter-spacing: .08em; color: var(--accent-rose); font-weight: 600; }
+.hero-title { font-family: var(--font-body); font-size: 30px; letter-spacing: -0.02em; font-weight: 700; margin: 6px 0 8px; line-height: 1.2; }
+.hero-desc { color: var(--text-secondary); font-size: 14px; line-height: 1.7; max-width: 720px; }
+.hero-stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.hero-stat { background: var(--accent-ivory); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 10px 16px; min-width: 150px; }
+.hero-stat b { display: block; font-size: 20px; color: var(--accent-plum); }
+.hero-stat span { font-size: 12px; color: var(--text-muted); }
+.featured-badge { white-space: nowrap; font-size: 11px; font-weight: 600; color: var(--accent-gold); margin-left: auto; margin-right: 6px; }
+.prompt-card.featured { border-color: var(--accent-gold); }
+@media (max-width: 800px) { .hero { padding: 20px 20px 4px; } .hero-inner { padding: 20px; } .hero-title { font-size: 26px; } }
+@media (max-width: 600px) {
+  .hero-title { font-size: 22px; }
+  .hero-stat { flex: 1 1 0; min-width: 0; padding: 8px 10px; }
+  .hero-stat b { font-size: 16px; }
+  .logo-sub, .nav-actions .nav-btn { display: none; }
+  .search-box { width: 150px; }
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+@media (max-width: 1400px) {
+  .prompt-grid { grid-template-columns: repeat(5, 1fr); }
+}
+
+@media (max-width: 1100px) {
+  .prompt-grid { grid-template-columns: repeat(4, 1fr); }
+  .detail-body { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 800px) {
+  .prompt-grid { grid-template-columns: repeat(3, 1fr); }
+  .site-header { padding: 0 20px; }
+  .main-content { padding: 20px; }
+  .filter-bar { padding: 12px 20px; }
+  .search-box { width: 180px; }
+}
+
+@media (max-width: 600px) {
+  .prompt-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ═══════════════════════════════════════
+   LOADING SPINNER
+   ═══════════════════════════════════════ */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-light);
+  border-top-color: var(--accent-rose);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ═══════════════════════════════════════
+   CONTEXT MENU
+   ═══════════════════════════════════════ */
+.context-menu {
+  position: fixed;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-strong);
+  padding: 6px 0;
+  min-width: 160px;
+  z-index: 600;
+  display: none;
+}
+
+.context-menu.active { display: block; }
+
+.context-menu-item {
+  padding: 9px 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition);
+}
+
+.context-menu-item:hover {
+  background: var(--bg-secondary);
+  color: var(--accent-plum);
+}
+
+.context-menu-item.danger { color: #b44; }
+.context-menu-item.danger:hover { background: #fef0f0; }
+
+.context-menu-divider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 4px 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════ -->
+<header class="site-header">
+  <div class="logo" onclick="showMainPage()">
+    <div class="logo-icon">✦</div>
+    <span class="logo-text">Prompt Atelier</span>
+    <span class="logo-sub">Portfolio</span>
+  </div>
+  <div class="nav-actions">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="프롬프트 검색..." oninput="filterPrompts()">
+    </div>
+    <button class="nav-btn" onclick="openUploadModal()">📤 가져오기</button>
+    <button class="nav-btn" onclick="exportAll()">📥 전체 내보내기</button>
+    <button class="nav-btn primary" onclick="openAddModal()">＋ 새 프롬프트</button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════
+     MAIN PAGE
+     ═══════════════════════════════════════ -->
+<div class="main-page" id="mainPage">
+  <!-- PROFILE HERO (v2) -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-kicker">CS/CX 실무자 · AI 활용 포트폴리오</div>
+      <h1 class="hero-title">11년 상담 현장의 반복 업무를, AI로 가볍게 만듭니다</h1>
+      <p class="hero-desc">카드·보험·공공기관·커머스·식품 고객센터에서 상담과 운영을 해 왔습니다. 현장에서 본 반복 업무를 프롬프트와 작은 웹앱, 자동화로 직접 줄여 온 기록을 모았습니다. ⭐ 표시가 대표 프로젝트입니다.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><b>11년+</b><span>상담·CS 운영 경력</span></div>
+        <div class="hero-stat"><b>99.4%</b><span>팀장 시절 인콜 응대율</span></div>
+        <div class="hero-stat"><b>전사 3위</b><span>사내 AI 핵심인재 선발</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <button class="filter-chip active" data-filter="all" onclick="setFilter('all', this)">전체</button>
+    <div class="filter-divider"></div>
+    <button class="filter-chip claude" data-filter="claude" onclick="setFilter('claude', this)">Claude</button>
+    <button class="filter-chip gpt" data-filter="gpt" onclick="setFilter('gpt', this)">GPT</button>
+    <div class="filter-divider"></div>
+    <button class="filter-chip" data-filter="webapp" onclick="setFilter('webapp', this)">웹앱</button>
+    <button class="filter-chip" data-filter="system" onclick="setFilter('system', this)">시스템</button>
+    <button class="filter-chip" data-filter="coding" onclick="setFilter('coding', this)">코딩</button>
+    <button class="filter-chip" data-filter="writing" onclick="setFilter('writing', this)">글쓰기</button>
+    <button class="filter-chip" data-filter="analysis" onclick="setFilter('analysis', this)">분석</button>
+    <span class="item-count" id="itemCount"></span>
+  </div>
+
+  <!-- GRID -->
+  <div class="main-content">
+    <div class="prompt-grid" id="promptGrid"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SUB PAGE — DETAIL VIEW
+     ═══════════════════════════════════════ -->
+<div class="sub-page" id="subPage">
+  <div class="detail-header">
+    <button class="back-btn" onclick="showMainPage()">← 목록으로 돌아가기</button>
+    <div class="detail-title-row">
+      <div>
+        <div class="detail-title" id="detailTitle"></div>
+        <div class="detail-meta" id="detailMeta"></div>
+      </div>
+      <div class="detail-actions">
+        <button class="btn btn-secondary" onclick="downloadCurrent()">📥 다운로드</button>
+        <button class="btn btn-secondary" onclick="editCurrent()">✏️ 편집</button>
+        <button class="btn btn-danger" onclick="deleteCurrent()">🗑️ 삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-body">
+    <div class="prompt-content-area">
+      <div class="prompt-content-header">
+        <span class="prompt-content-label">프롬프트 내용</span>
+        <button class="copy-btn" onclick="copyContent()">📋 복사</button>
+      </div>
+      <div class="prompt-content-body" id="detailContent"></div>
+    </div>
+
+    <div class="detail-sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">정보</div>
+        <div id="detailInfo"></div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">AI 변환</div>
+        <div class="convert-section">
+          <div class="convert-btn-group" id="convertBtns"></div>
+          <div class="convert-result" id="convertResult">
+            <div class="convert-result-header">
+              <span class="convert-result-label" id="convertResultLabel"></span>
+              <button class="copy-btn" onclick="copyConverted()">📋 복사</button>
+            </div>
+            <div class="convert-result-body" id="convertResultBody"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">태그</div>
+        <div class="card-tags" id="detailTags" style="gap:6px;flex-wrap:wrap;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     ADD/EDIT MODAL
+     ═══════════════════════════════════════ -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">새 프롬프트</span>
+      <button class="modal-close" onclick="closeModals()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">제목</label>
+        <input class="form-input" id="formTitle" placeholder="프롬프트 이름">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">AI 모델</label>
+          <select class="form-select" id="formAI">
+            <option value="claude">Claude</option>
+            <option value="gpt">GPT</option>
+            <option value="webapp">웹앱</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">카테고리</label>
+          <select class="form-select" id="formCategory">
+            <option value="system">시스템</option>
+            <option value="coding">코딩</option>
+            <option value="writing">글쓰기</option>
+            <option value="analysis">분석</option>
+            <option value="webapp">웹앱</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">설명</label>
+        <input class="form-input" id="formDesc" placeholder="간단한 설명">
+      </div>
+      <div class="form-group">
+        <label class="form-label">프롬프트 내용</label>
+        <textarea class="form-textarea" id="formContent" placeholder="프롬프트를 입력하세요..."></textarea>
+      </div>
+      <div class="form-group" id="previewUrlGroup" style="display:none;">
+        <label class="form-label">🔗 미리보기 URL (GitHub Pages 주소)</label>
+        <input class="form-input" id="formPreviewUrl" placeholder="https://username.github.io/reborn-apps/파일명.html">
+      </div>
+      <div class="form-group">
+        <label class="form-label">태그 (Enter로 추가)</label>
+        <div class="form-tags-input" id="tagsInput" onclick="document.getElementById('tagField').focus()">
+          <input type="text" id="tagField" placeholder="태그 입력..." onkeydown="handleTag(event)">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModals()">취소</button>
+        <button class="btn btn-primary" id="saveBtn" onclick="savePrompt()">💾 저장</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     PREVIEW MODAL
+     ═══════════════════════════════════════ -->
+<div class="modal-overlay" id="previewModal">
+  <div class="modal" style="max-width:900px;width:95vw;height:85vh;display:flex;flex-direction:column;padding:0;overflow:hidden;">
+    <div class="modal-header" style="padding:16px 20px;">
+      <span class="modal-title" id="previewModalTitle">웹앱 미리보기</span>
+      <button class="modal-close" onclick="closePreview()">✕</button>
+    </div>
+    <iframe id="previewIframe" src="" style="flex:1;border:none;" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--bg-secondary);border-top:1px solid var(--border-light);font-size:12px;">
+      <span id="previewUrlDisplay" style="font-family:monospace;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%;"></span>
+      <a id="previewOpenLink" href="#" target="_blank" style="font-size:12px;padding:6px 14px;border-radius:8px;background:var(--accent-plum);color:white;border:none;cursor:pointer;text-decoration:none;">🔗 새 탭으로 열기</a>
+    </div>
+  </div>
+</div>
+<!-- ═══════════════════════════════════════
+     UPLOAD MODAL
+     ═══════════════════════════════════════ -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">프롬프트 가져오기</span>
+      <button class="modal-close" onclick="closeModals()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"
+           ondragover="event.preventDefault(); this.classList.add('dragover')"
+           ondragleave="this.classList.remove('dragover')"
+           ondrop="handleFileDrop(event)">
+        <div class="upload-zone-icon">📂</div>
+        <div class="upload-zone-text">파일을 드래그하거나 클릭하여 업로드</div>
+        <div class="upload-zone-hint">.json / .txt / .md 지원</div>
+      </div>
+      <input type="file" id="fileInput" accept=".json,.txt,.md" multiple style="display:none" onchange="handleFileSelect(event)">
+      <div id="uploadPreview" style="margin-top:16px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTEXT MENU -->
+<div class="context-menu" id="contextMenu">
+  <div class="context-menu-item" onclick="contextAction('edit')">✏️ 편집</div>
+  <div class="context-menu-item" onclick="contextAction('download')">📥 다운로드</div>
+  <div class="context-menu-item" onclick="contextAction('duplicate')">📄 복제</div>
+  <div class="context-menu-divider"></div>
+  <div class="context-menu-item danger" onclick="contextAction('delete')">🗑️ 삭제</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ═══════════════════════════════════════
+   DATA STORE
+   ═══════════════════════════════════════ */
+const STORAGE_KEY = 'prompt_atelier_data';
+let prompts = [];
+let currentFilter = 'all';
+let currentSearch = '';
+let currentDetailId = null;
+let editingId = null;
+let formTags = [];
+let contextTargetId = null;
+
+// Load from localStorage
+function loadData() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      prompts = JSON.parse(saved);
+      // v2: 이미 저장된 목록이 있어도 새로 추가된 기본 항목은 합쳐 넣기 (같은 제목은 건너뜀)
+      // v2: 하나로 합친 항목의 예전 카드는 빼기
+      const MERGED_AWAY = ['도슨트 강의 스크립트 생성기', '도슨트 마스터 v2.0'];
+      prompts = prompts.filter(p => !MERGED_AWAY.includes(p.title));
+      const titles = new Set(prompts.map(p => p.title));
+      const added = getSampleData().filter(p => p.v2 && !titles.has(p.title));
+      if (added.length) { prompts = prompts.concat(added); }
+      // v2: 공개용으로 고친 기본 항목은 저장본도 같은 내용으로 바꾸기
+      const fresh = getSampleData();
+      prompts = prompts.map(p => {
+        const r = fresh.find(x => x.rev === 2 && x.title === p.title);
+        if (r && p.rev !== 2) {
+          return { ...p, ai: r.ai, desc: r.desc, content: r.content, tags: r.tags, model: r.model, updated: r.updated, rev: 2 };
+        }
+        if (p.title === '학습 계획 설계자' && /\u0041DHD/.test(p.desc + p.content + (p.tags || []).join())) {
+          const n = fresh.find(x => x.title === p.title);
+          return { ...p, desc: n.desc, content: n.content, tags: n.tags };
+        }
+        if (p.id === 'v2_cs_chatbot' && !p.period) { const n = fresh.find(x => x.id === p.id); return { ...p, created: n.created, period: n.period }; }
+        if (p.ai === 'gemini') {
+          const n = fresh.find(x => x.title === p.title);
+          return n ? { ...p, ai: n.ai, desc: n.desc, content: n.content } : { ...p, ai: 'claude' };
+        }
+        return p;
+      });
+      // 미리보기 주소가 새로 생긴 항목은 저장본에도 채워 넣기
+      prompts = prompts.map(p => {
+        const n = fresh.find(x => x.id === p.id || x.title === p.title);
+        return (n && n.previewUrl && !p.previewUrl) ? { ...p, previewUrl: n.previewUrl } : p;
+      });
+      saveData();
+    } else {
+      prompts = getSampleData();
+      saveData();
+    }
+  } catch (e) {
+    prompts = getSampleData();
+  }
+}
+
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(prompts));
+  } catch (e) {
+    console.warn('Storage save failed');
+  }
+}
+
+function getSampleData() {
+  return [
+    {
+      id: 'v2_case_pickle', v2: true, featured: true, title: 'AI 쇼핑 비서 링크 이탈 문제 개선 제안 (사례)', ai: 'case', category: 'analysis', updated: '2026-11-09',
+      desc: "AI 비서가 추천한 상품 링크가 휴대폰에서 안 열리는 문제를 직접 재현해 원인을 좁히고 개선안을 제안한 사례",
+      content: "배경: AI 쇼핑 비서가 추천한 쿠팡 상품 링크가 안드로이드에서 앱으로 열리지 않고 브라우저로 튕겨, 추천을 받고도 구매까지 못 가는 문제\n\n내가 한 일 (재현 → 원인 좁히기 → 임시 해결 → 개선 요청)\n1. 여러 링크 형식을 직접 테스트해 모두 앱에서 열리지 않음을 확인\n2. 휴대폰 설정 '기본으로 열기 › 지원되는 웹 주소'에서 쿠팡 앱이 받는 주소가 link·applink 2개뿐임을 근거로 확보\n3. 원인 정리: 일반 웹 주소는 앱이 받지 않고, 공유 링크는 쿠팡이 발급하는 토큰이 필요해 AI가 만들 수 없음\n4. 임시 해결: 상품번호를 앱 검색창에 붙여넣으면 바로 열림\n5. 서비스 팀에 제안: 앱을 바로 여는 링크 방식 검토, 추천 시 상품번호 함께 표기\n\nCS 경험과의 연결: 상담 현장에서도 고객이 알려 준 오류와 직접 찾아낸 오류를 재현해 확인하고 담당 부서에 개선을 요청해 왔고, 같은 방식을 AI 서비스에 적용\n\n느낀 점: 서비스에는 사용자의 목소리를 듣는 창구가 꼭 필요하다. 이번에는 내가 그 '알려 주는 고객'이 되어 보았다.\n\n결과: 개선 제안 메일 발송(2026.11.08) · 반영 여부 확인 전",
+      tags: ['CS', '문제해결', '사용자경험'], created: '2026-11-08'
+    },
+    {
+      id: "v2_skill_builder", v2: true, rev: 2, title: "상담 매뉴얼 → Claude 스킬 변환기", ai: "claude", category: "system", model: "Claude Opus 5.5", updated: '2026-11-03',
+      desc: "고객센터 매뉴얼을 Claude가 필요할 때 꺼내 쓰는 스킬(SKILL.md)로 바꾸는 프롬프트",
+      content: "<role>당신은 고객센터 업무 매뉴얼을 Claude 스킬(SKILL.md)로 바꾸는 설계자입니다.</role>\n\n<context>\n스킬은 Claude가 필요할 때만 꺼내 읽는 업무 설명서입니다. Claude는 description을 보고 언제 이 스킬을 쓸지 정하므로, description이 정확해야 상담원이 원할 때 제대로 불려 나옵니다.\n</context>\n\n<manual>\n{{상담 매뉴얼, FAQ, 처리 기준 원문}}\n</manual>\n\n<instructions>\n1. 매뉴얼에서 반복되는 문의 유형과 처리 기준을 뽑으세요.\n2. 매뉴얼에 없는 정책(환불 기간, 보상 금액 등)은 만들지 말고 \"확인 필요\"로 남기세요.\n3. 판단이 갈리는 경우는 실제 문의 예시로 보여 주세요.\n</instructions>\n\n<output_format>\n---\nname: 소문자-하이픈 이름\ndescription: 무엇을 하는지와 언제 쓰는지 한두 문장\n---\n# 처리 순서\n# 문의 유형별 기준\n# 답변 톤과 피할 표현\n# 예시 (문의 → 답변) 2개\n# 상위 이관 기준\n</output_format>",
+      tags: ["CS", "스킬", "업무매뉴얼"], created: "2026-11-03"
+    },
+    {
+      id: 'v2_cs_chatbot', v2: true, featured: true, title: '상담 업무용 AI 챗봇 (사례)', ai: 'webapp', category: 'system',
+      desc: '커머스 고객지원실에서 직접 기획·구현해 도입을 이끈 상담 보조 챗봇',
+      content: '배경: 취소·환불·교환·반품, 판매자 인증 등 반복 문의가 많은 커머스 고객지원실\n역할: 기획부터 구현, 팀 도입까지 리딩\n결과: 사내 AI 핵심인재 선발 전사 3위\n\n※ 회사 자료라 화면과 코드는 공개하지 않고, 과정과 결과만 정리했습니다.',
+      previewUrl: '',
+      tags: ['CS', '챗봇', '업무개선'], created: '2025-10-01', period: '2025년 가을'
+    },
+    {
+      id: 'v2_assistant_system', v2: true, featured: true, title: 'AI 비서 3인 시스템 (루나·치즈·레이)', ai: "claude", category: 'system', model: "Claude Opus 5.5", updated: '2026-11-03', rev: 2,
+      desc: "메시지 주제에 따라 일정·금융공부·AI 역할을 자동으로 바꾸는 개인 비서 시스템 프롬프트",
+      content: "<role>\n당신은 한 사람을 돕는 세 명의 AI 비서입니다: 🌙 루나(일정·루틴), 🧀 치즈(금융 교육), ⚡ 레이(AI 파트너·실행).\n</role>\n\n<routing>\n메시지 주제를 보고 가장 맞는 비서 한 명이 답합니다.\n- ETF, 주식, 투자, 금리 → 🧀 치즈\n- AI, 프롬프트, 자동화, 캘린더, 알림 → ⚡ 레이\n- 공부, 계획, 오늘, 루틴, 일정 → 🌙 루나\n</routing>\n\n<principles>\n사용자는 휴대폰으로 짧게 확인하므로, 결론을 첫 줄에 두고 5줄 안에서 끝냅니다.\n- 목록은 3개까지, 전문용어는 괄호 안에 쉽게 풀이\n- 선택지는 A/B 두 개, 최종본은 사용자가 승인한 뒤 확정\n- 치즈는 판단 기준을 가르치는 역할이므로 매수·매도를 권하지 않고, 끝에 ⚠️ 리스크 1줄\n- 레이는 실제로 끝난 일에만 ✅를 붙이고, 끝에 ⚡ 주의사항 1줄\n</principles>\n\n<meeting_mode>\n\"회의\" 요청이 오면 세 비서와 반대석(솔트)이 각자 결론을 먼저 낸 뒤, 핵심 3가지와 날짜가 있는 다음 행동 하나로 정리합니다.\n</meeting_mode>\n\n<example>\n사용자: 오늘 너무 피곤해\n🌙 루나: 오늘은 3분 복습만 해요. 프롬프트 노트 한 장만 넘겨 보고 쉬어도 충분해요.\n</example>",
+      tags: ["시스템프롬프트", "페르소나", "라우팅"], created: '2026-10-30'
+    },
+    {
+      id: 'v2_news_bot', v2: true, featured: true, title: 'AI 뉴스 자동 수집 봇', ai: 'webapp', category: 'webapp',
+      desc: '매일 아침 8시 AI 뉴스와 실무 팁을 모아 주는 GitHub Actions 자동화',
+      content: 'Python 수집 스크립트 + GitHub Actions 예약 실행(매일 08:00) · AI 뉴스 3건 + 공부용 실무 소식 2건 · 날짜별 기록과 일요일 주간 요약 자동 생성 · 서버 없이 무료로 운영',
+      previewUrl: '',
+      tags: ['자동화', 'GitHub Actions', 'Python'], created: '2026-11-01'
+    },
+    {
+      id: 'v2_threads_tutor', v2: true, title: '스레드 튜터', ai: 'webapp', category: 'webapp',
+      desc: '저장해 둔 AI 활용 글 46개를 퀴즈·프롬프트 실습으로 바꾼 학습 웹앱',
+      content: '저장글 46개 정리 · 퀴즈 14개 · 프롬프트 실습 9개 · 14개 글을 공식 문서와 대조해 정확도 검증',
+      previewUrl: '',
+      tags: ['학습', '퀴즈', '웹앱'], created: '2026-11-01'
+    },
+    {
+      id: 'v2_claude_note', v2: true, title: 'Claude 노트', ai: 'webapp', category: 'webapp',
+      desc: 'AI에게 한 질문과 배운 점을 쌓아 두는 개인 지식 노트 앱',
+      content: '질문·교훈 카드 기록 · ⭐ 즐겨찾기 · 상태 표시(💭 아이디어 → 🧪 실험) · 저장 버그를 직접 원인 분석해 수정(v11)',
+      previewUrl: '',
+      tags: ['노트', '지식관리', '웹앱'], created: '2026-10-31'
+    },
+    {
+      id: genId(), title: '코드 리뷰어', ai: "claude", category: 'coding', model: "Claude Opus 5.5", updated: '2026-11-03', rev: 2,
+      desc: "실제 버그를 재현 상황으로 확인하는 머지 전 코드 리뷰 프롬프트",
+      content: "<role>당신은 실무 경험이 많은 시니어 소프트웨어 엔지니어입니다.</role>\n\n<context>\n이 리뷰는 머지 전에 실제 버그를 막기 위한 것입니다. 스타일 취향보다 동작 오류, 보안, 데이터 손실 위험이 더 중요합니다.\n</context>\n\n<code language=\"{{언어}}\">\n{{코드}}\n</code>\n\n<instructions>\n1. 코드가 하려는 일을 2줄로 요약하세요.\n2. 문제를 찾으면 \"어떤 입력에서 어떤 결과가 잘못되는지\" 구체적인 상황으로 확인하세요. 상황을 만들 수 없으면 '의심'으로 표시하세요.\n3. 요청 범위 밖의 리팩터링이나 새 추상화 대신, 꼭 필요한 최소 수정만 제시하세요.\n</instructions>\n\n<output_format>\n심각도(상/중/하) 순으로 정리하세요. 각 항목은\n- 위치 (파일:줄)\n- 문제와 재현 상황\n- 수정 코드 (바뀐 부분만)\n문제가 없으면 \"머지 가능\"과 근거 한 줄만 쓰세요.\n</output_format>",
+      tags: ["코드리뷰", "XML", "개발"], created: '2025-02-18'
+    },
+    {
+      id: genId(), title: 'SEO 블로그 작성기', ai: "gpt", category: 'writing', model: "GPT-6 Astra", updated: '2026-11-03', rev: 2,
+      desc: "결론 먼저, 과장 없이 쓰는 SEO 블로그 글 프롬프트",
+      content: "# 역할\n당신은 IT 블로그 전문 SEO 에디터입니다.\n\n# 입력\n- 주제: {{주제}}\n- 핵심 키워드: {{키워드}}\n- 독자: {{독자}}\n\n# 작업\n입력을 바탕으로 검색에 잘 걸리고 끝까지 읽히는 글을 바로 작성하세요. 정보가 조금 부족해도 질문하지 말고 합리적으로 가정한 뒤, 가정은 글 끝에 적으세요.\n\n# 요구 사항\n- 첫 문단에서 독자가 얻을 결론을 먼저 말하기\n- H2·H3로 구조화, 키워드는 제목·첫 문단·H2 하나에 자연스럽게\n- 분량 2,000~3,000자\n- 목록은 순서나 비교가 있는 내용에만 쓰고, 나머지는 문단으로\n- 상투적인 표현과 과장 없이 직접적으로\n- 확인되지 않은 수치는 쓰지 않기\n\n# 출력 형식\n1. 메타 설명 (120자 이내)\n2. 본문 (마크다운)\n3. 내부 링크 제안 3개\n4. 사용한 가정",
+      tags: ["SEO", "블로그", "마케팅"], created: '2025-02-15'
+    },
+    {
+      id: genId(), title: '데이터 분석 리포트', ai: "claude", category: 'analysis', model: "Claude Sonnet 5.5", updated: '2026-11-03', rev: 2,
+      desc: "결정에 필요한 사실만 뽑는 경영진 보고용 분석 프롬프트",
+      content: "<role>당신은 숫자를 경영진이 바로 쓸 수 있는 결론으로 바꾸는 데이터 분석가입니다.</role>\n\n<data>\n{{데이터 또는 첨부 파일}}\n</data>\n\n<goal>\n{{알고 싶은 것, 예: 지난 분기 문의량이 왜 늘었는지}}\n이 리포트는 다음 회의에서 결정을 내리는 데 쓰입니다. 그래서 흥미로운 사실보다 결정에 영향을 주는 사실이 중요합니다.\n</goal>\n\n<instructions>\n- 분석 전에 데이터의 기간, 행 수, 빠진 값을 먼저 확인하세요.\n- 계산한 숫자에는 계산 방법을 함께 적고, 데이터로 확인할 수 없는 해석은 '가설'로 표시하세요.\n- 이상치는 지우지 말고 따로 표시한 뒤 결과에 주는 영향만 설명하세요.\n</instructions>\n\n<output_format>\n<summary>경영진 요약 3줄 (결론 → 근거 → 권장 행동)</summary>\n<findings>핵심 발견 최대 3개, 각각 근거 숫자 포함</findings>\n<charts>발견마다 맞는 차트 유형 1개와 이유</charts>\n<data_notes>데이터 한계와 추가로 필요한 데이터</data_notes>\n</output_format>",
+      tags: ["데이터", "분석", "리포트"], created: '2025-02-12'
+    },
+    {
+      id: genId(), rev: 2, title: 'Thread 작성 봇', ai: 'webapp', category: 'webapp', updated: '2026-11-06',
+      desc: '글쓰기가 자신 없던 내가 SNS 스레드 글을 직접 써 보도록 만든 글쓰기 튜토리얼',
+      content: '왜 만들었나: 글쓰기에 자신이 없어 AI 글쓰기 파트너에게 맡기던 스레드 글을, 직접 써 보는 연습을 하려고\n지금: 글쓰기는 AI 파트너와 함께 하는 단계로 넘어감. 이 앱은 그 과정의 첫걸음\n\n5단계 구조화 튜토리얼 · TIL/문제→해결/A vs B 템플릿 · 실시간 미리보기 · AI 분석 점수 · 체크리스트',
+      previewUrl: 'https://lunaeun.github.io/thread-tutorial_1.html',
+      tags: ['웹앱', 'SNS', '스레드'], created: '2025-02-20'
+    },
+    {
+      id: genId(), rev: 2, title: '프롬프트 엔지니어링 노트', ai: 'webapp', category: 'webapp', updated: '2026-11-06',
+      desc: 'AI마다 다른 사용법을 공식 가이드로 공부하고, 같은 프롬프트가 AI별로 어떻게 나오는지 비교하려고 만든 노트',
+      content: '왜 만들었나: AI마다 사용법이 다르고 공부할 게 많아서, 공식 가이드 기준으로 정리하고 같은 프롬프트를 각 AI에 시켰을 때 결과를 직접 비교해 보려고\n\n3대 AI 모델 프롬프트 전략 비교 · CRAFT 분석기 · 비교표 · 실습 랩',
+      previewUrl: 'https://lunaeun.github.io/prompt-engineering-note.html',
+      tags: ['프롬프트', '가이드', '웹앱'], created: '2025-02-22'
+    },
+    {
+      id: genId(), title: 'Prompt Atelier', ai: 'webapp', category: 'webapp',
+      desc: 'AI 프롬프트 포트폴리오 관리 시스템',
+      content: 'Claude/GPT/Gemini 프롬프트 저장 · 카테고리 필터 · AI 변환 · 내보내기/가져오기 · localStorage 영구 저장',
+      previewUrl: '',
+      tags: ['프롬프트', '포트폴리오', '웹앱'], created: '2025-02-22'
+    },
+    {
+      id: 'v2_docent_master', v2: true, title: '도슨트 마스터 (강의 스크립트 생성기)', ai: 'webapp', category: 'webapp', updated: '2026-11-06',
+      desc: '도슨트가 꿈이지만 전문 지식이 부족해, 작품마다 강의 초안을 만들려고 직접 만든 도구',
+      content: '왜 만들었나: 도슨트 강의를 해 보고 싶은데 작품별 전문 지식이 부족해서, 강의 초안을 만들고 늘려 보려고\n\n3단계로 키운 과정\n① v1 · 스크립트 설정과 프리셋 템플릿으로 초안 만들기\n② V2 · 메트로폴리탄 미술관 공개 API로 작품 검색 → 대상·어조·분량(10/30/60분)·언어 선택 → AI 스크립트 생성\n③ 마스터 v2.0 · 데이터 매니저로 작품과 스크립트를 저장·관리\n\n다음 개선: 최신 AI 모델로 교체, 확인되지 않은 일화는 "(확인 필요)"로 표시해 사실 오류 줄이기',
+      previewUrl: 'https://lunaeun.github.io/도슨트마스터_v2.html',
+      tags: ['도슨트', '미술', '공개API', '웹앱'], created: '2025-02-23'
+    },
+    {
+      id: genId(), rev: 2, title: '도슨트 양성 프로그램', ai: 'webapp', category: 'webapp', updated: '2026-11-06',
+      desc: '연습작 · 스크립트 생성기가 잘되면 열어 볼까 상상한 가상 교육 프로그램 랜딩페이지',
+      content: '가상 기획 연습 · 국내에 도슨트 양성 과정이 지금처럼 정리되지 않았던 때, 생성기 다음 단계로 상상해 본 기획\n커리큘럼(서양·동양미술사, 전시기획, 스크립트 작성법, 현장실습) · 가격 근거 · AI 관점 셀프 검토 · 추천 도서',
+      previewUrl: 'https://lunaeun.github.io/도슨트양성프로그램.html',
+      tags: ['연습작', '도슨트', '랜딩페이지', '웹앱'], created: '2025-02-24'
+    },
+    {
+      id: genId(), rev: 2, title: '인스타 카드뉴스 메이커', ai: 'webapp', category: 'webapp', updated: '2026-11-06',
+      desc: '카드뉴스 디자인과 글 다듬기에 드는 시간을 줄이려고 만든 자동 생성기',
+      content: '왜 만들었나: 카드뉴스 한 세트를 디자인하고 문장을 다듬는 데 시간이 오래 걸려서, 그 과정을 자동화하려고\n\nCanvas 1080×1080 렌더링 · Gemini API 소제목 생성 · 5가지 디자인 · PNG/ZIP 다운로드 · 텍스트 자동 폰트 축소',
+      previewUrl: '',
+      tags: ['인스타', '카드뉴스', 'Canvas', 'Gemini', '웹앱'], created: '2025-02-25'
+    },
+    {
+      id: genId(), rev: 2, title: '2026 만다라트 KPI 대시보드', ai: 'webapp', category: 'webapp', updated: '2026-11-06',
+      desc: '몇 년째 만다라트로 1년 계획을 세우고 회고해 온 내가, 전체 진행을 한눈에 보려고 만든 대시보드',
+      content: '왜 만들었나: 여러 해 동안 만다라트로 1년 계획을 세우고 체크·회고해 왔는데, 전체적으로 잘 가고 있는지 한눈에 보고 싶어서\n결과: 실제로 사용하며 도움을 받았고, 지금은 체크 과정을 자동화해 두어 손이 덜 가는 단계\n\nChart.js 시각화 · localStorage 저장 · KPI 추적 · 만다라트 9x9 구조',
+      previewUrl: '',
+      tags: ['만다라트', 'KPI', '목표관리', '웹앱'], created: '2025-02-25'
+    },
+    {
+      id: genId(), title: 'API 문서 생성기', ai: "claude", category: 'coding', model: "Claude Sonnet 5.5", updated: '2026-11-03', rev: 2,
+      desc: "코드에서 확인되는 내용만 쓰는 REST API 문서화 프롬프트",
+      content: "<role>당신은 개발자가 처음 봐도 바로 호출할 수 있는 문서를 쓰는 기술 문서 작성자입니다.</role>\n\n<source_code>\n{{엔드포인트 코드}}\n</source_code>\n\n<instructions>\n코드에서 확인되는 내용만 문서화하세요. 코드로 알 수 없는 값(인증 방식, 요청 제한 등)은 추측하지 말고 \"확인 필요\"로 표시하세요. 설명은 한국어로, 필드명과 코드는 원문 그대로 씁니다.\n</instructions>\n\n<output_format>\n엔드포인트마다\n1. 개요 (한 줄)\n2. 요청 파라미터 표 (이름 | 위치 | 타입 | 필수 | 설명)\n3. 응답 예시 (json 코드 블록)\n4. 에러 코드 표\n5. curl 호출 예시\n마지막에 OpenAPI 3.1 YAML 조각을 붙이세요.\n</output_format>\n\n<example>\n### GET /users/{id}\n사용자 한 명의 정보를 조회합니다.\n| 이름 | 위치 | 타입 | 필수 | 설명 |\n| id | path | string | 예 | 사용자 ID |\n</example>",
+      tags: ["API", "문서화", "자동화"], created: '2025-02-10'
+    },
+    {
+      id: genId(), title: '이메일 톤 변환기', ai: "gpt", category: 'writing', model: "GPT-6 Astra", updated: '2026-11-03', rev: 2,
+      desc: "핵심 정보는 그대로 두고 톤만 바꾸는 비즈니스 이메일 프롬프트",
+      content: "# 역할\n당신은 비즈니스 이메일 편집자입니다.\n\n# 입력\n- 원문: {{이메일 초안}}\n- 원하는 톤: {{정중한 공식 / 친근한 업무용 / 사과 / 긴급 중 하나}}\n- 받는 사람: {{관계, 예: 처음 연락하는 거래처}}\n\n# 규칙\n- 날짜, 금액, 요청 사항 같은 핵심 정보는 빠뜨리거나 바꾸지 않기\n- 길이는 원문의 ±20% 안에서\n- 받는 사람이 해야 할 일을 마지막 문단에 한 번 더 분명히\n- 상투적인 인사말 대신 상황에 맞는 첫 문장 쓰기\n- 오해나 갈등을 부를 수 있는 표현은 고쳐 쓰고 표시하기\n\n# 출력\n1. 바뀐 이메일 (바로 보낼 수 있는 상태)\n2. 바꾼 점 3줄 이하\n3. ⚠️ 확인할 표현 (있을 때만)",
+      tags: ["이메일", "비즈니스", "톤"], created: '2025-02-08'
+    },
+    {
+      id: genId(), title: '학습 계획 설계자', ai: "claude", category: 'system', model: "Claude Sonnet 5.5", updated: '2026-11-03', rev: 2,
+      desc: "짧은 블록으로 꾸준히 공부하게 돕는 학습 일정 설계 시스템 프롬프트",
+      content: "<role>\n당신은 \"루나\"라는 이름의 학습 코치입니다. 따뜻하지만 군더더기 없이 말합니다.\n</role>\n\n<user_context>\n사용자는 짧은 블록으로 나눠야 꾸준히 공부할 수 있습니다. 긴 계획표는 시작 자체를 어렵게 만들기 때문에, 계획은 작고 구체적이어야 합니다.\n</user_context>\n\n<principles>\n- 한 블록은 과제에 맞게 15~30분, 하루 최대 2블록\n- 핵심 포인트는 최대 3개\n- 어려운 개념은 일상 비유로 풀기\n- 확실하지 않은 정보는 \"(확인 필요)\"로 표시\n- 블록을 못 했다고 하면 탓하지 말고 A) 다른 날 같은 크기 B) 10분 미니 블록 중 고르게 하기\n</principles>\n\n<output_format>\n📅 오늘 블록 (시각 · 길이 · 할 일)\n🎯 끝났다고 볼 기준 1줄\n🔔 알림 제안\n답은 5줄 안팎으로, 결론부터 쓰세요.\n</output_format>",
+      tags: ["학습", "루틴", "시스템"], created: '2025-02-05'
+    },
+    {
+      id: genId(), title: 'SQL 쿼리 최적화', ai: "claude", category: 'coding', model: "Claude Opus 5.5", updated: '2026-11-03', rev: 2,
+      desc: "결과는 그대로 두고 병목만 줄이는 SQL 튜닝 프롬프트",
+      content: "<role>당신은 데이터베이스 성능 튜닝 전문가입니다.</role>\n\n<environment>\nDB 종류와 버전: {{예: PostgreSQL 16}}\n테이블 크기와 인덱스: {{알면 적기}}\n</environment>\n\n<query>\n{{SQL}}\n</query>\n\n<instructions>\n실행 계획을 직접 볼 수 없으니, 예측한 내용은 예측이라고 밝히세요. 결과가 바뀌지 않는 최적화만 제안하고, 결과가 달라질 수 있는 변경은 따로 경고하세요. 개선률은 근거 없이 숫자로 쓰지 말고, 대신 직접 확인할 EXPLAIN 명령을 주세요.\n</instructions>\n\n<output_format>\n1. 병목 진단 (가장 큰 원인부터)\n2. 최적화된 쿼리\n3. 인덱스 제안 (CREATE INDEX 문)\n4. 확인 방법 (EXPLAIN ANALYZE)\n5. 주의사항\n</output_format>",
+      tags: ["SQL", "최적화", "DB"], created: '2025-02-01'
+    },
+    {
+      id: genId(), title: '사용자 페르소나 빌더', ai: "gpt", category: 'analysis', model: "GPT-6 Astra", updated: '2026-11-03', rev: 2,
+      desc: "모든 항목에 근거를 붙이는 UX 리서치 페르소나 프롬프트",
+      content: "# 역할\n당신은 UX 리서처입니다.\n\n# 입력\n리서치 자료: {{인터뷰 메모, 설문 결과, 상담 기록 등}}\n\n# 작업\n자료에 근거한 페르소나 1~2개를 만드세요. 자료가 조금 부족해도 질문하지 말고 진행하되, 모든 항목에 근거를 붙이세요.\n\n# 규칙\n- 각 항목 뒤에 근거를 [자료: ...] 또는 [추정]으로 표시\n- 나이나 성별 같은 고정관념으로 성격을 꾸미지 않기\n- 불편 사항은 심각도 순으로, 실제 인용이 있으면 그대로 쓰기\n\n# 출력 형식\n## 페르소나 이름 (한 줄 소개)\n- 상황과 배경\n- 목표 (주·부)\n- 불편 사항 Top 3\n- 행동 패턴\n- 디지털 익숙도 (1~5)\n- 대표 한마디\n- 하루 시나리오 (5문장 이내)\n## 디자인에 주는 시사점 3개",
+      tags: ["UX", "페르소나", "리서치"], created: '2025-01-28'
+    }
+  ];
+}
+
+/* ═══════════════════════════════════════
+   UTILITY
+   ═══════════════════════════════════════ */
+function genId() {
+  return 'p_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+function toast(msg) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+function formatDate(str) {
+  if (!str) return '-';
+  const d = new Date(str);
+  return d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+/* ═══════════════════════════════════════
+   RENDERING
+   ═══════════════════════════════════════ */
+function renderGrid() {
+  const grid = document.getElementById('promptGrid');
+  let filtered = prompts;
+
+  // filter by AI or category
+  if (currentFilter !== 'all') {
+    filtered = filtered.filter(p =>
+      p.ai === currentFilter || p.category === currentFilter
+    );
+  }
+
+  // search
+  if (currentSearch) {
+    const q = currentSearch.toLowerCase();
+    filtered = filtered.filter(p =>
+      p.title.toLowerCase().includes(q) ||
+      p.desc.toLowerCase().includes(q) ||
+      (p.tags || []).some(t => t.toLowerCase().includes(q)) ||
+      p.content.toLowerCase().includes(q)
+    );
+  }
+
+  // Update count
+  document.getElementById('itemCount').textContent = `${filtered.length}개 항목`;
+
+  let html = '';
+
+  // ADD NEW card
+  html += `
+    <div class="prompt-card add-new" onclick="openAddModal()">
+      <div class="add-icon">＋</div>
+      <div class="add-label">새 프롬프트 추가</div>
+    </div>
+  `;
+
+  if (filtered.length === 0) {
+    html += `
+      <div class="empty-state">
+        <div class="empty-icon">✦</div>
+        <div class="empty-title">프롬프트가 없습니다</div>
+        <div class="empty-desc">새 프롬프트를 추가하거나 필터를 변경해보세요</div>
+      </div>
+    `;
+  } else {
+    // Sort by created desc
+    filtered.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || new Date(b.created) - new Date(a.created));
+
+    filtered.forEach(p => {
+      const tagsHtml = (p.tags || []).slice(0, 3).map(t =>
+        `<span class="card-tag">${escHtml(t)}</span>`
+      ).join('');
+
+      html += `
+        <div class="prompt-card${p.featured ? ' featured' : ''}" onclick="showDetail('${p.id}')" data-id="${p.id}">
+          <div class="card-header">
+            <span class="ai-badge ${p.ai}">${p.ai.toUpperCase()}</span>
+            ${p.featured ? '<span class="featured-badge">⭐ 대표</span>' : ''}
+            <button class="card-menu-btn" onclick="event.stopPropagation(); showContextMenu(event, '${p.id}')">⋯</button>
+          </div>
+          <div class="card-title">${escHtml(p.title)}</div>
+          <div class="card-desc">${escHtml(p.desc)}</div>
+          <div class="card-footer">
+            <div class="card-tags">${tagsHtml}</div>
+            <span class="card-date">${p.period || formatDate(p.created)}</span>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  grid.innerHTML = html;
+}
+
+function escHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+/* ═══════════════════════════════════════
+   FILTERS
+   ═══════════════════════════════════════ */
+function setFilter(val, el) {
+  currentFilter = val;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderGrid();
+}
+
+function filterPrompts() {
+  currentSearch = document.getElementById('searchInput').value.trim();
+  renderGrid();
+}
+
+/* ═══════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════ */
+function showMainPage() {
+  document.getElementById('mainPage').classList.remove('hidden');
+  document.getElementById('subPage').classList.remove('active');
+  currentDetailId = null;
+  renderGrid();
+}
+
+const CAT_LABEL = { system: '시스템', coding: '코딩', writing: '글쓰기', analysis: '분석', webapp: '웹앱' };
+function catLabel(c) { return CAT_LABEL[c] || c; }
+
+function showDetail(id) {
+  const p = prompts.find(x => x.id === id);
+  if (!p) return;
+
+  currentDetailId = id;
+  document.getElementById('mainPage').classList.add('hidden');
+  document.getElementById('subPage').classList.add('active');
+
+  document.getElementById('detailTitle').textContent = p.title;
+  document.getElementById('detailContent').textContent = p.content;
+
+  // Meta
+  document.getElementById('detailMeta').innerHTML = `
+    <span class="ai-badge ${p.ai}">${p.ai.toUpperCase()}</span>
+    <span style="font-size:12px;color:var(--text-muted)">${catLabel(p.category)}</span>
+    <span style="font-size:12px;color:var(--text-muted)">${p.period || formatDate(p.created)}</span>
+  `;
+
+  // Info
+  document.getElementById('detailInfo').innerHTML = `
+    <div class="info-row"><span class="info-label">AI 모델</span><span class="info-value">${p.ai.toUpperCase()}</span></div>
+    <div class="info-row"><span class="info-label">카테고리</span><span class="info-value">${catLabel(p.category)}</span></div>
+    ${p.model ? `<div class="info-row"><span class="info-label">권장 모델</span><span class="info-value">${escHtml(p.model)}</span></div>` : ''}
+    ${p.updated ? `<div class="info-row"><span class="info-label">최신화</span><span class="info-value">${formatDate(p.updated)}</span></div>` : ''}
+    <div class="info-row"><span class="info-label">생성일</span><span class="info-value">${p.period || formatDate(p.created)}</span></div>
+    <div class="info-row"><span class="info-label">글자 수</span><span class="info-value">${p.content.length.toLocaleString()}자</span></div>
+  `;
+
+  // Tags
+  document.getElementById('detailTags').innerHTML = (p.tags || []).map(t =>
+    `<span class="card-tag" style="font-size:12px;padding:4px 12px;">${escHtml(t)}</span>`
+  ).join('');
+
+  // Convert buttons (only for non-webapp)
+  const targets = ['claude', 'gpt'].filter(x => x !== p.ai);
+  const convertBtns = document.getElementById('convertBtns');
+
+  if (p.ai === 'case') {
+    convertBtns.innerHTML = '<div style="font-size:12px;color:var(--text-muted);">사례 글은 AI 변환을 지원하지 않습니다.</div>';
+  } else if (p.ai === 'webapp') {
+    const previewBtn = p.previewUrl
+      ? `<button class="btn btn-secondary" onclick="openPreview('${p.id}')">🔍 미리보기</button>`
+      : `<button class="btn btn-secondary" style="opacity:0.4;cursor:default;" title="GitHub Pages URL을 등록하면 미리보기가 활성화돼요">🔍 미리보기 (URL 미등록)</button>`;
+    convertBtns.innerHTML = previewBtn + '<div style="font-size:12px;color:var(--text-muted);margin-top:8px;">웹앱은 AI 변환이 지원되지 않습니다.</div>';
+  } else {
+    convertBtns.innerHTML = targets.map(ai => `
+      <button class="convert-btn ${ai}" onclick="convertPrompt('${ai}')">
+        <span class="convert-dot ${ai}"></span>
+        ${ai.toUpperCase()}용으로 변환
+      </button>
+    `).join('');
+  }
+
+  // Reset convert result
+  document.getElementById('convertResult').classList.remove('active');
+  window.scrollTo({ top: 0 });
+}
+
+/* ═══════════════════════════════════════
+   ADD / EDIT
+   ═══════════════════════════════════════ */
+function togglePreviewUrlField() {
+  const ai = document.getElementById('formAI').value;
+  const grp = document.getElementById('previewUrlGroup');
+  if (grp) grp.style.display = ai === 'webapp' ? '' : 'none';
+}
+
+function openAddModal() {
+  editingId = null;
+  formTags = [];
+  document.getElementById('modalTitle').textContent = '새 프롬프트';
+  document.getElementById('saveBtn').textContent = '💾 저장';
+  document.getElementById('formTitle').value = '';
+  document.getElementById('formAI').value = 'claude';
+  document.getElementById('formCategory').value = 'system';
+  document.getElementById('formDesc').value = '';
+  document.getElementById('formContent').value = '';
+  document.getElementById('formPreviewUrl').value = '';
+  togglePreviewUrlField();
+  renderFormTags();
+  document.getElementById('addModal').classList.add('active');
+  document.getElementById('formAI').onchange = togglePreviewUrlField;
+}
+
+function editCurrent() {
+  const p = prompts.find(x => x.id === currentDetailId);
+  if (!p) return;
+  openEditModal(p.id);
+}
+
+function openEditModal(id) {
+  const p = prompts.find(x => x.id === id);
+  if (!p) return;
+
+  editingId = id;
+  formTags = [...(p.tags || [])];
+  document.getElementById('modalTitle').textContent = '프롬프트 편집';
+  document.getElementById('saveBtn').textContent = '✅ 수정 완료';
+  document.getElementById('formTitle').value = p.title;
+  document.getElementById('formAI').value = p.ai;
+  document.getElementById('formCategory').value = p.category;
+  document.getElementById('formDesc').value = p.desc;
+  document.getElementById('formContent').value = p.content;
+  document.getElementById('formPreviewUrl').value = p.previewUrl || '';
+  togglePreviewUrlField();
+  document.getElementById('formAI').onchange = togglePreviewUrlField;
+  renderFormTags();
+  document.getElementById('addModal').classList.add('active');
+}
+
+function savePrompt() {
+  const title = document.getElementById('formTitle').value.trim();
+  const ai = document.getElementById('formAI').value;
+  const category = document.getElementById('formCategory').value;
+  const desc = document.getElementById('formDesc').value.trim();
+  const content = document.getElementById('formContent').value.trim();
+  const previewUrl = document.getElementById('formPreviewUrl').value.trim();
+
+  if (!title || !content) {
+    toast('⚠️ 제목과 내용을 입력해주세요');
+    return;
+  }
+
+  if (editingId) {
+    const idx = prompts.findIndex(x => x.id === editingId);
+    if (idx !== -1) {
+      prompts[idx] = { ...prompts[idx], title, ai, category, desc, content, previewUrl, tags: [...formTags] };
+      toast('✅ 프롬프트가 수정되었습니다');
+    }
+  } else {
+    prompts.push({
+      id: genId(), title, ai, category, desc, content, previewUrl,
+      tags: [...formTags],
+      created: new Date().toISOString().slice(0, 10)
+    });
+    toast('✅ 새 프롬프트가 추가되었습니다');
+  }
+
+  saveData();
+  closeModals();
+  if (currentDetailId && editingId === currentDetailId) {
+    showDetail(currentDetailId);
+  } else {
+    renderGrid();
+  }
+  editingId = null;
+}
+
+/* ═══════════════════════════════════════
+   TAGS
+   ═══════════════════════════════════════ */
+function handleTag(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const val = e.target.value.trim();
+    if (val && !formTags.includes(val) && formTags.length < 10) {
+      formTags.push(val);
+      renderFormTags();
+    }
+    e.target.value = '';
+  }
+}
+
+function removeFormTag(idx) {
+  formTags.splice(idx, 1);
+  renderFormTags();
+}
+
+function renderFormTags() {
+  const container = document.getElementById('tagsInput');
+  const input = document.getElementById('tagField');
+  const tagEls = container.querySelectorAll('.tag-item');
+  tagEls.forEach(el => el.remove());
+
+  formTags.forEach((t, i) => {
+    const span = document.createElement('span');
+    span.className = 'tag-item';
+    span.innerHTML = `${escHtml(t)} <span class="remove-tag" onclick="event.stopPropagation(); removeFormTag(${i})">×</span>`;
+    container.insertBefore(span, input);
+  });
+}
+
+/* ═══════════════════════════════════════
+   DELETE
+   ═══════════════════════════════════════ */
+function deleteCurrent() {
+  if (!currentDetailId) return;
+  if (!confirm('이 프롬프트를 삭제할까요?')) return;
+  prompts = prompts.filter(x => x.id !== currentDetailId);
+  saveData();
+  toast('🗑️ 삭제되었습니다');
+  showMainPage();
+}
+
+/* ═══════════════════════════════════════
+   DOWNLOAD / EXPORT
+   ═══════════════════════════════════════ */
+function downloadCurrent() {
+  const p = prompts.find(x => x.id === currentDetailId);
+  if (!p) return;
+  downloadPrompt(p);
+}
+
+function downloadPrompt(p) {
+  const data = {
+    title: p.title,
+    ai: p.ai,
+    category: p.category,
+    description: p.desc,
+    content: p.content,
+    tags: p.tags,
+    created: p.created,
+    exported: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${p.title.replace(/[^a-zA-Z0-9가-힣]/g, '_')}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('📥 다운로드 완료');
+}
+
+function exportAll() {
+  if (prompts.length === 0) {
+    toast('⚠️ 내보낼 프롬프트가 없습니다');
+    return;
+  }
+  const data = {
+    version: '1.0',
+    exported: new Date().toISOString(),
+    count: prompts.length,
+    prompts: prompts
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `prompt_atelier_backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast(`📥 ${prompts.length}개 프롬프트 전체 내보내기 완료`);
+}
+
+/* ═══════════════════════════════════════
+   UPLOAD / IMPORT
+   ═══════════════════════════════════════ */
+function openUploadModal() {
+  document.getElementById('uploadPreview').innerHTML = '';
+  document.getElementById('uploadModal').classList.add('active');
+}
+
+function handleFileDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+}
+
+function handleFileSelect(e) {
+  handleFiles(e.target.files);
+  e.target.value = '';
+}
+
+function handleFiles(files) {
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const text = e.target.result;
+        let imported = [];
+
+        if (file.name.endsWith('.json')) {
+          const json = JSON.parse(text);
+          if (json.prompts && Array.isArray(json.prompts)) {
+            imported = json.prompts;
+          } else if (json.title && json.content) {
+            imported = [json];
+          } else {
+            toast('⚠️ 지원하지 않는 JSON 형식입니다');
+            return;
+          }
+        } else {
+          // txt / md → single prompt
+          imported = [{
+            title: file.name.replace(/\.(txt|md)$/, ''),
+            content: text,
+            ai: 'claude',
+            category: 'system',
+            desc: `${file.name}에서 가져옴`,
+            tags: ['imported']
+          }];
+        }
+
+        imported.forEach(item => {
+          prompts.push({
+            id: genId(),
+            title: item.title || 'Untitled',
+            ai: item.ai || 'claude',
+            category: item.category || 'system',
+            desc: item.desc || item.description || '',
+            content: item.content || '',
+            tags: item.tags || [],
+            created: item.created || new Date().toISOString().slice(0, 10)
+          });
+        });
+
+        saveData();
+        toast(`✅ ${imported.length}개 프롬프트 가져오기 완료`);
+        closeModals();
+        renderGrid();
+      } catch (err) {
+        toast('⚠️ 파일 처리 중 오류가 발생했습니다');
+        console.error(err);
+      }
+    };
+    reader.readAsText(file);
+  });
+}
+
+/* ═══════════════════════════════════════
+   COPY
+   ═══════════════════════════════════════ */
+function copyContent() {
+  const text = document.getElementById('detailContent').textContent;
+  navigator.clipboard.writeText(text).then(() => toast('📋 복사되었습니다'));
+}
+
+function copyConverted() {
+  const text = document.getElementById('convertResultBody').textContent;
+  navigator.clipboard.writeText(text).then(() => toast('📋 변환 결과가 복사되었습니다'));
+}
+
+/* ═══════════════════════════════════════
+   AI CONVERSION
+   ═══════════════════════════════════════ */
+function convertPrompt(targetAI) {
+  const p = prompts.find(x => x.id === currentDetailId);
+  if (!p) return;
+
+  const converted = doConvert(p.content, p.ai, targetAI);
+
+  document.getElementById('convertResultLabel').textContent = `${targetAI.toUpperCase()}용으로 변환됨`;
+  document.getElementById('convertResultBody').textContent = converted;
+  document.getElementById('convertResult').classList.add('active');
+  toast(`⚡ ${targetAI.toUpperCase()}용으로 변환 완료`);
+}
+
+function doConvert(content, fromAI, toAI) {
+  // Convert between AI prompt styles
+  let result = content;
+
+  if (toAI === 'claude') {
+    result = convertToClaude(result, fromAI);
+  } else if (toAI === 'gpt') {
+    result = convertToGPT(result, fromAI);
+  } else if (toAI === 'gemini') {
+    result = convertToGemini(result, fromAI);
+  }
+
+  return result;
+}
+
+function convertToClaude(content, from) {
+  let result = content;
+
+  // Remove markdown headers → XML tags
+  result = result.replace(/^# Role\n?/gm, '<role>\n');
+  result = result.replace(/^# Task\n?/gm, '<task>\n');
+  result = result.replace(/^# Requirements\n?/gm, '<requirements>\n');
+  result = result.replace(/^# Output\n?/gm, '<output_format>\n');
+  result = result.replace(/^# Rules\n?/gm, '<rules>\n');
+  result = result.replace(/^## (.+)$/gm, '<$1>');
+
+  // If no XML tags exist, wrap in Claude structure
+  if (!result.includes('<role>') && !result.includes('<task>')) {
+    const lines = result.split('\n');
+    let role = '';
+    let task = '';
+    let rest = [];
+    let section = 'task';
+
+    lines.forEach(line => {
+      if (line.match(/^(역할|Role|당신은)/i)) {
+        section = 'role';
+        role += line + '\n';
+      } else if (line.match(/^(과제|Task|작업|목표|Goal)/i)) {
+        section = 'task';
+        task += line + '\n';
+      } else if (section === 'role' && !line.match(/^(#|\n)/)) {
+        role += line + '\n';
+      } else {
+        rest.push(line);
+      }
+    });
+
+    if (role || task) {
+      result = '';
+      if (role) result += `<role>\n${role.trim()}\n</role>\n\n`;
+      if (task) result += `<task>\n${task.trim()}\n</task>\n\n`;
+      if (rest.length) result += `<context>\n${rest.join('\n').trim()}\n</context>`;
+    } else {
+      result = `<instructions>\n${content.trim()}\n</instructions>`;
+    }
+  }
+
+  // Add Claude-style formatting hint
+  if (!result.includes('<output_format>')) {
+    result += '\n\n<output_format>\n구조화된 형식으로 응답해주세요.\n</output_format>';
+  }
+
+  return result.trim();
+}
+
+function convertToGPT(content, from) {
+  let result = content;
+
+  // Remove XML tags → Markdown headers
+  result = result.replace(/<role>\n?/g, '# Role\n');
+  result = result.replace(/<\/role>\n?/g, '\n');
+  result = result.replace(/<task>\n?/g, '# Task\n');
+  result = result.replace(/<\/task>\n?/g, '\n');
+  result = result.replace(/<context>\n?/g, '# Context\n');
+  result = result.replace(/<\/context>\n?/g, '\n');
+  result = result.replace(/<instructions>\n?/g, '# Instructions\n');
+  result = result.replace(/<\/instructions>\n?/g, '\n');
+  result = result.replace(/<output_format>\n?/g, '# Output Format\n');
+  result = result.replace(/<\/output_format>\n?/g, '\n');
+  result = result.replace(/<requirements>\n?/g, '# Requirements\n');
+  result = result.replace(/<\/requirements>\n?/g, '\n');
+  result = result.replace(/<rules>\n?/g, '# Rules\n');
+  result = result.replace(/<\/rules>\n?/g, '\n');
+  result = result.replace(/<constraints>\n?/g, '# Constraints\n');
+  result = result.replace(/<\/constraints>\n?/g, '\n');
+  result = result.replace(/<principles>\n?/g, '# Principles\n');
+  result = result.replace(/<\/principles>\n?/g, '\n');
+  result = result.replace(/<[^>]+>\n?/g, '');
+
+  // Clean up multiple blank lines
+  result = result.replace(/\n{3,}/g, '\n\n');
+
+  // Add GPT-style system instruction hint
+  if (!result.includes('Think step by step') && !result.includes('step-by-step')) {
+    result += '\n\nThink carefully and provide a comprehensive response.';
+  }
+
+  return result.trim();
+}
+
+function convertToGemini(content, from) {
+  let result = content;
+
+  // Gemini prefers shorter, direct prompts
+  // Remove XML tags
+  result = result.replace(/<[^>]+>/g, '');
+
+  // Remove markdown headers → simpler format
+  result = result.replace(/^#+\s*/gm, '');
+
+  // Clean up
+  result = result.replace(/\n{3,}/g, '\n\n');
+
+  // Gemini style: direct and concise
+  const lines = result.trim().split('\n').filter(l => l.trim());
+  if (lines.length > 2) {
+    result = lines.join('\n');
+  }
+
+  // Add Gemini-style format hint
+  if (!result.includes('형식') && !result.includes('format') && !result.includes('Format')) {
+    result += '\n\n위 내용을 명확하고 구조적으로 응답해주세요.';
+  }
+
+  return result.trim();
+}
+
+/* ═══════════════════════════════════════
+   CONTEXT MENU
+   ═══════════════════════════════════════ */
+function showContextMenu(e, id) {
+  e.preventDefault();
+  contextTargetId = id;
+  const menu = document.getElementById('contextMenu');
+  menu.style.left = e.clientX + 'px';
+  menu.style.top = e.clientY + 'px';
+  menu.classList.add('active');
+}
+
+function contextAction(action) {
+  closeContextMenu();
+  const p = prompts.find(x => x.id === contextTargetId);
+  if (!p) return;
+
+  switch (action) {
+    case 'edit':
+      openEditModal(p.id);
+      break;
+    case 'download':
+      downloadPrompt(p);
+      break;
+    case 'duplicate':
+      const dup = { ...p, id: genId(), title: p.title + ' (복사)', created: new Date().toISOString().slice(0, 10), tags: [...(p.tags || [])] };
+      prompts.push(dup);
+      saveData();
+      renderGrid();
+      toast('📄 복제되었습니다');
+      break;
+    case 'delete':
+      if (confirm('이 프롬프트를 삭제할까요?')) {
+        prompts = prompts.filter(x => x.id !== contextTargetId);
+        saveData();
+        renderGrid();
+        toast('🗑️ 삭제되었습니다');
+      }
+      break;
+  }
+}
+
+function closeContextMenu() {
+  document.getElementById('contextMenu').classList.remove('active');
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.context-menu') && !e.target.closest('.card-menu-btn')) {
+    closeContextMenu();
+  }
+});
+
+/* ═══════════════════════════════════════
+   MODALS
+   ═══════════════════════════════════════ */
+function closeModals() {
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+}
+
+function openPreview(id) {
+  const p = prompts.find(x => x.id === id);
+  if (!p || !p.previewUrl) { toast('⚠️ 미리보기 URL이 등록되지 않았습니다'); return; }
+  document.getElementById('previewModalTitle').textContent = '🔍 ' + p.title;
+  document.getElementById('previewIframe').src = p.previewUrl;
+  document.getElementById('previewUrlDisplay').textContent = p.previewUrl;
+  document.getElementById('previewOpenLink').href = p.previewUrl;
+  document.getElementById('previewModal').classList.add('active');
+}
+
+function closePreview() {
+  document.getElementById('previewModal').classList.remove('active');
+  document.getElementById('previewIframe').src = '';
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeModals();
+  });
+});
+
+// ESC to close
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeModals();
+    closeContextMenu();
+  }
+});
+
+/* ═══════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════ */
+loadData();
+renderGrid();
+</script>
+</body>
+</html>

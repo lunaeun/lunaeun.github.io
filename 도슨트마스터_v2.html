@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>도슨트 마스터 v2.0 — 강의 스크립트 생성기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg0:#08080d;--bg1:#10101a;--bg2:#181828;--bg3:#222238;--bd:#2a2a42;--bd2:#3a3a58;--t1:#eae8f2;--t2:#9a98aa;--t3:#6a6880;--gold:#d4a843;--blue:#5b8def;--green:#4ecb71;--red:#e85d5d;--purple:#a678e8;--cyan:#40c9e0;--orange:#e8934e;--sans:'Noto Sans KR',sans-serif;--serif:'Noto Serif KR',serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:14px;scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg0);color:var(--t1);min-height:100vh;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg1);}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px;}
+
+.app{display:flex;height:100vh;overflow:hidden;}
+.side{width:260px;min-width:260px;background:var(--bg1);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow-y:auto;}
+.side-hd{padding:18px 14px;border-bottom:1px solid var(--bd);text-align:center;}
+.side-hd h1{font-family:var(--serif);font-size:1.15rem;background:linear-gradient(135deg,#d4a843,#e8c874);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.side-hd small{font-size:.65rem;color:var(--t3);display:block;margin-top:4px;}
+.nav-sec{padding:10px 0;}
+.nav-sec-t{font-size:.6rem;font-weight:700;color:var(--t3);letter-spacing:2px;padding:0 14px;margin-bottom:6px;text-transform:uppercase;}
+.nav-i{display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;font-size:.82rem;color:var(--t2);border-left:3px solid transparent;transition:.2s;}
+.nav-i:hover{background:var(--bg2);color:var(--t1);}
+.nav-i.on{background:rgba(212,168,67,.08);color:var(--gold);border-left-color:var(--gold);}
+
+.main{flex:1;overflow-y:auto;}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(8,8,13,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--bd);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;}
+.topbar h2{font-family:var(--serif);font-size:1.05rem;}
+.topbar-btn{background:var(--bg2);border:1px solid var(--bd);color:var(--t2);padding:5px 12px;border-radius:6px;cursor:pointer;font-size:.72rem;font-family:var(--sans);transition:.2s;}
+.topbar-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+.page{padding:24px;display:none;}
+.page.on{display:block;}
+
+.card{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:18px;}
+.card h3{font-family:var(--serif);font-size:.95rem;margin-bottom:12px;}
+.badge{font-size:.6rem;padding:3px 8px;border-radius:16px;background:rgba(212,168,67,.13);color:var(--gold);display:inline-block;}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;}
+
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.fg label{font-size:.68rem;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1px;}
+.fg input,.fg textarea,.fg select{background:var(--bg0);border:1px solid var(--bd);color:var(--t1);padding:9px 12px;border-radius:6px;font-size:.84rem;font-family:var(--sans);}
+.fg input:focus,.fg textarea:focus{outline:none;border-color:var(--gold);}
+.fg textarea{min-height:70px;resize:vertical;line-height:1.6;}
+
+.btn{padding:7px 14px;border-radius:6px;border:1px solid var(--bd);background:var(--bg2);color:var(--t2);cursor:pointer;font-size:.74rem;font-family:var(--sans);transition:.2s;display:inline-flex;align-items:center;gap:5px;}
+.btn:hover{border-color:var(--gold);color:var(--gold);}
+.btn-g{background:linear-gradient(135deg,#d4a843,#e8c874);color:#000;border:none;font-weight:700;}
+.btn-g:hover{opacity:.9;}
+.btn-r{border-color:var(--red);color:var(--red);}
+.btn-gr{border-color:var(--green);color:var(--green);}
+
+.chips{display:flex;flex-wrap:wrap;gap:5px;}
+.chip{padding:5px 11px;border-radius:18px;font-size:.72rem;border:1px solid var(--bd);cursor:pointer;color:var(--t2);background:var(--bg0);transition:.2s;}
+.chip.on{border-color:var(--gold);background:rgba(212,168,67,.13);color:var(--gold);}
+.chip:hover{border-color:var(--bd2);}
+
+.tree-box{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:14px;overflow-y:auto;max-height:calc(100vh - 220px);}
+.tree-cat{font-size:.62rem;font-weight:700;color:var(--t3);letter-spacing:1px;padding:4px 10px;text-transform:uppercase;}
+.tree-i{padding:7px 10px;cursor:pointer;border-radius:6px;font-size:.8rem;display:flex;align-items:center;gap:7px;color:var(--t2);transition:.15s;}
+.tree-i:hover{background:var(--bg3);color:var(--t1);}
+.tree-i.on{background:rgba(212,168,67,.1);color:var(--gold);}
+.tree-ch{padding-left:18px;}
+
+.editor-box{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:18px;overflow-y:auto;max-height:calc(100vh - 220px);}
+
+.sblock{padding:14px;margin-bottom:14px;border-radius:10px;border-left:3px solid var(--gold);background:rgba(212,168,67,.03);}
+.sblock.ctx{border-left-color:var(--blue);background:rgba(91,141,239,.03);}
+.sblock.art{border-left-color:var(--purple);background:rgba(166,120,232,.03);}
+.sblock.formal{border-left-color:var(--cyan);background:rgba(64,201,224,.03);}
+.sblock.inter{border-left-color:var(--green);background:rgba(78,203,113,.03);}
+.sblock.bridge{border-left-color:var(--orange);background:rgba(232,147,78,.03);}
+.sblock.note{border-left-color:var(--red);background:rgba(232,93,93,.04);font-style:italic;font-size:.8rem;}
+.sblock-lb{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.sblock-tx{font-family:var(--serif);font-size:.9rem;line-height:1.85;}
+.time-b{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:rgba(212,168,67,.1);border-radius:10px;font-size:.62rem;color:var(--gold);margin-left:8px;}
+
+.stat-row{display:flex;gap:14px;margin-bottom:18px;flex-wrap:wrap;}
+.stat-c{background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:12px 18px;flex:1;min-width:120px;}
+.stat-v{font-size:1.5rem;font-weight:900;}
+.stat-l{font-size:.66rem;color:var(--t3);margin-top:2px;}
+
+.artwork-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;}
+.art-card{background:var(--bg2);border:1px solid var(--bd);border-radius:10px;overflow:hidden;cursor:pointer;transition:.3s;}
+.art-card:hover{border-color:var(--gold);transform:translateY(-2px);}
+.art-card img{width:100%;height:150px;object-fit:cover;background:var(--bg0);}
+.art-card .info{padding:8px;}
+.art-card .info .t{font-size:.76rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.art-card .info .a{font-size:.66rem;color:var(--t3);}
+
+.pipe-flow{display:flex;gap:14px;margin-bottom:22px;overflow-x:auto;padding-bottom:8px;}
+.pipe-step{min-width:180px;background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:14px;text-align:center;position:relative;}
+.pipe-step::after{content:'→';position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:1.1rem;}
+.pipe-step:last-child::after{display:none;}
+.pipe-num{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#d4a843,#e8c874);color:#000;font-weight:900;font-size:.72rem;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;}
+.pipe-t{font-size:.78rem;font-weight:700;}
+.pipe-d{font-size:.66rem;color:var(--t3);}
+
+.timer-display{font-size:3.5rem;font-weight:900;color:var(--gold);text-align:center;margin:18px 0;font-variant-numeric:tabular-nums;}
+.rh-section{padding:8px 12px;border-radius:6px;margin-bottom:4px;font-size:.8rem;display:flex;justify-content:space-between;align-items:center;background:var(--bg0);border:1px solid var(--bd);}
+.rh-section.active{border-color:var(--gold);background:rgba(212,168,67,.08);}
+.rh-section.done{opacity:.5;text-decoration:line-through;}
+
+.search-bar{display:flex;gap:8px;margin-bottom:14px;}
+.search-bar input{flex:1;background:var(--bg0);border:1px solid var(--bd);color:var(--t1);padding:9px 14px;border-radius:6px;font-size:.84rem;font-family:var(--sans);}
+.search-bar input:focus{outline:none;border-color:var(--gold);}
+
+.detail-panel{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:18px;max-height:calc(100vh - 260px);overflow-y:auto;}
+.detail-panel img{width:100%;border-radius:10px;margin-bottom:14px;}
+.df{margin-bottom:8px;}.df .dl{font-size:.66rem;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:1px;}.df .dv{font-size:.84rem;margin-top:2px;}
+
+@media(max-width:900px){
+.side{width:52px;min-width:52px;}.side-hd h1,.side-hd small,.nav-sec-t,.nav-i span:not(.ic){display:none;}.nav-i{justify-content:center;padding:10px;}
+.grid2,.grid3{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ===== SIDEBAR ===== -->
+<nav class="side">
+  <div class="side-hd"><h1>도슨트 마스터 v2.0</h1><small>Lecture Script Generator — Upgraded</small></div>
+  <div class="nav-sec">
+    <div class="nav-sec-t">1순위 — 데이터 관리</div>
+    <div class="nav-i on" onclick="go('p1')"><span class="ic">📁</span><span>데이터 매니저</span></div>
+    <div class="nav-i" onclick="go('p2')"><span class="ic">📥</span><span>JSON 가져오기/내보내기</span></div>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-sec-t">2순위 — 스크립트 생성</div>
+    <div class="nav-i" onclick="go('p3')"><span class="ic">📝</span><span>확장 스크립트 생성기</span></div>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-sec-t">3순위 — 오픈 API</div>
+    <div class="nav-i" onclick="go('p4')"><span class="ic">🏛️</span><span>메트로폴리탄 미술관</span></div>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-sec-t">4순위 — AI 파이프라인</div>
+    <div class="nav-i" onclick="go('p5')"><span class="ic">🤖</span><span>AI 스크립트 생성</span></div>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-sec-t">도구</div>
+    <div class="nav-i" onclick="go('p6')"><span class="ic">⏱️</span><span>리허설 타이머</span></div>
+    <div class="nav-i" onclick="go('p7')"><span class="ic">📤</span><span>내보내기</span></div>
+  </div>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<main class="main">
+<div class="topbar">
+  <h2 id="ptitle">📁 데이터 매니저</h2>
+<div style="display:flex;gap:6px;">
+    <button class="topbar-btn" onclick="dlAll()">💾 전체 백업</button>
+    <button class="topbar-btn" onclick="showScriptManager()">📋 스크립트 관리</button>
+    <button class="topbar-btn" onclick="resetAll()">🔄 초기화</button>
+</div>
+</div>
+
+<!-- ====== PAGE 1: DATA MANAGER ====== -->
+<div class="page on" id="p1">
+  <div class="stat-row">
+    <div class="stat-c"><div class="stat-v" style="color:var(--gold)" id="s-mod">0</div><div class="stat-l">전체 모듈</div></div>
+    <div class="stat-c"><div class="stat-v" style="color:var(--blue)" id="s-art">0</div><div class="stat-l">등록 작품</div></div>
+<div class="stat-c" onclick="showScriptManager()" style="cursor:pointer;" title="클릭하여 스크립트 관리">
+  <div class="stat-v" style="color:var(--green)" id="s-scr">0</div>
+  <div class="stat-l">생성 스크립트 ✏️</div>
+</div>
+    <div class="stat-c"><div class="stat-v" style="color:var(--purple)" id="s-ver">0</div><div class="stat-l">검증 완료</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:260px 1fr;gap:18px;">
+    <div class="tree-box" id="tree"></div>
+    <div class="editor-box" id="editor"><p style="color:var(--t3);text-align:center;padding:40px;">← 좌측 트리에서 모듈 또는 작품을 선택하세요</p></div>
+  </div>
+</div>
+
+<!-- ====== PAGE 2: JSON IMPORT/EXPORT ====== -->
+<div class="page" id="p2">
+  <div class="grid2">
+    <div class="card">
+      <h3>📥 JSON 가져오기</h3>
+      <div class="fg"><label>JSON 파일 업로드</label><input type="file" accept=".json" id="jfile" onchange="jImport(event)"></div>
+      <div class="fg"><label>또는 JSON 직접 붙여넣기</label><textarea id="jpaste" rows="10" placeholder='{"modules":[...]}'></textarea></div>
+      <div style="display:flex;gap:6px;"><button class="btn btn-g" onclick="jPaste()">붙여넣기에서 가져오기</button><button class="btn" onclick="jMerge()">기존 데이터와 병합</button></div>
+    </div>
+    <div class="card">
+      <h3>📤 JSON 내보내기</h3>
+      <div class="fg"><label>범위</label><select id="escope"><option value="all">전체</option><option value="western">서양미술사</option><option value="eastern">동양미술사</option><option value="exhibition">전시기획</option></select></div>
+      <div style="display:flex;gap:6px;margin-top:8px;"><button class="btn btn-g" onclick="jExport()">📥 JSON 다운로드</button><button class="btn" onclick="jCopy()">📋 클립보드 복사</button></div>
+      <div class="fg" style="margin-top:12px;"><label>미리보기</label><textarea id="jprev" rows="10" readonly style="font-family:monospace;font-size:.72rem;"></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PAGE 3: SCRIPT GENERATOR ====== -->
+<div class="page" id="p3">
+  <div style="display:grid;grid-template-columns:300px 1fr;gap:18px;">
+    <div style="background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:18px;overflow-y:auto;max-height:calc(100vh - 160px);">
+      <div style="margin-bottom:16px;"><div style="font-size:.68rem;font-weight:700;color:var(--gold);letter-spacing:1.5px;margin-bottom:8px;">모듈 선택</div>
+        <select id="selmod" style="width:100%;padding:9px;background:var(--bg0);border:1px solid var(--bd);color:var(--t1);border-radius:6px;" onchange="onModSel()"></select>
+        <div id="artlist" style="margin-top:10px;"></div>
+      </div>
+      <div style="margin-bottom:16px;"><div style="font-size:.68rem;font-weight:700;color:var(--gold);letter-spacing:1.5px;margin-bottom:8px;">스크립트 유형</div>
+        <div class="chips" id="ch-type"><div class="chip on" data-v="docent">도슨트 해설</div><div class="chip" data-v="lecture">강의</div><div class="chip" data-v="planning">기획 발표</div></div>
+      </div>
+      <div style="margin-bottom:16px;"><div style="font-size:.68rem;font-weight:700;color:var(--gold);letter-spacing:1.5px;margin-bottom:8px;">시간 (분)</div>
+        <input type="range" id="dur" min="10" max="120" value="40" style="width:100%;" oninput="document.getElementById('durv').textContent=this.value+'분'">
+<span id="durv" style="font-size:.78rem;color:var(--gold);">40분</span>
+      </div>
+      <div style="margin-bottom:16px;"><div style="font-size:.68rem;font-weight:700;color:var(--gold);letter-spacing:1.5px;margin-bottom:8px;">📄 목표 분량 (A4 장수)</div>
+        <div class="chips" id="ch-pages">
+          <div class="chip" data-v="2" onclick="document.getElementById('target-pages').value='2';document.querySelectorAll('#ch-pages .chip').forEach(c=>c.classList.remove('on'));this.classList.add('on');">2장</div>
+          <div class="chip on" data-v="4" onclick="document.getElementById('target-pages').value='4';document.querySelectorAll('#ch-pages .chip').forEach(c=>c.classList.remove('on'));this.classList.add('on');">4장</div>
+          <div class="chip" data-v="6" onclick="document.getElementById('target-pages').value='6';document.querySelectorAll('#ch-pages .chip').forEach(c=>c.classList.remove('on'));this.classList.add('on');">6장</div>
+          <div class="chip" data-v="8" onclick="document.getElementById('target-pages').value='8';document.querySelectorAll('#ch-pages .chip').forEach(c=>c.classList.remove('on'));this.classList.add('on');">8장</div>
+          <div class="chip" data-v="10" onclick="document.getElementById('target-pages').value='10';document.querySelectorAll('#ch-pages .chip').forEach(c=>c.classList.remove('on'));this.classList.add('on');">10장</div>
+        </div>
+        <input type="hidden" id="target-pages" value="4">
+        <div style="font-size:.65rem;color:var(--t3);margin-top:4px;">1장 ≈ 1,500자 (11pt 기준) | 4장 = 약 20분 발화량</div>
+      </div>
+      <div style="margin-bottom:16px;"><div style="font-size:.68rem;font-weight:700;color:var(--gold);letter-spacing:1.5px;margin-bottom:8px;">대상</div>
+
+        <div class="chips" id="ch-aud"><div class="chip" data-v="beginner">초보</div><div class="chip on" data-v="intermediate">중급</div><div class="chip" data-v="expert">전문가</div></div>
+      </div>
+      <div style="margin-bottom:16px;"><div style="font-size:.68rem;font-weight:700;color:var(--gold);letter-spacing:1.5px;margin-bottom:8px;">어조</div>
+        <div class="chips" id="ch-tone"><div class="chip on" data-v="professional">전문적</div><div class="chip" data-v="warm">따뜻한</div><div class="chip" data-v="story">스토리텔링</div></div>
+      </div>
+      <div style="margin-bottom:16px;"><div style="font-size:.68rem;font-weight:700;color:var(--gold);letter-spacing:1.5px;margin-bottom:8px;">포함 요소</div>
+        <div class="chips" id="ch-el">
+          <div class="chip on" data-v="opening">오프닝</div><div class="chip on" data-v="context">시대맥락</div>
+          <div class="chip on" data-v="formal">형식분석</div><div class="chip on" data-v="artwork">작품해설</div>
+          <div class="chip on" data-v="comparative">비교작품</div><div class="chip on" data-v="interactive">관람객질문</div>
+          <div class="chip on" data-v="bridge">전환멘트</div><div class="chip" data-v="note">도슨트노트</div>
+          <div class="chip on" data-v="closing">클로징</div><div class="chip" data-v="refs">참고문헌</div>
+        </div>
+      </div>
+      <button class="btn btn-g" style="width:100%;padding:13px;" onclick="genScript()">✨ 확장 스크립트 생성</button>
+    </div>
+    <div id="sout" style="background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:22px;overflow-y:auto;max-height:calc(100vh - 160px);">
+      <p style="color:var(--t3);text-align:center;padding:50px;">모듈과 옵션 선택 후 <strong style="color:var(--gold);">"확장 스크립트 생성"</strong> 클릭</p>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PAGE 4: MET API ====== -->
+<div class="page" id="p4">
+  <div class="card">
+    <h3>🏛️ The Metropolitan Museum of Art — Open Access API <span class="badge">47만+ 작품 · API키 불필요</span></h3>
+    <div class="search-bar">
+      <input id="met-q" placeholder="작품명·작가명 검색 (영문)... 예: Monet, Sunflowers" onkeypress="if(event.key==='Enter')metSearch()">
+      <button class="btn btn-g" onclick="metSearch()">🔍 검색</button>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+      <select id="met-dept" style="background:var(--bg0);border:1px solid var(--bd);color:var(--t2);padding:5px 10px;border-radius:6px;font-size:.72rem;">
+        <option value="">전체 부서</option><option value="11">European Paintings</option><option value="21">Modern Art</option>
+        <option value="6">Asian Art</option><option value="13">Greek & Roman</option><option value="10">Egyptian</option>
+      </select>
+      <select id="met-hl" style="background:var(--bg0);border:1px solid var(--bd);color:var(--t2);padding:5px 10px;border-radius:6px;font-size:.72rem;">
+        <option value="">전체</option><option value="true">하이라이트만</option>
+      </select>
+    </div>
+    <div id="met-status" style="font-size:.72rem;color:var(--t3);">검색 준비 완료</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+    <div><div id="met-cnt" style="font-size:.72rem;color:var(--t3);margin-bottom:10px;"></div><div class="artwork-grid" id="met-grid"><p style="color:var(--t3);text-align:center;grid-column:1/-1;padding:30px;">검색어를 입력하세요</p></div></div>
+    <div class="detail-panel" id="met-detail"><p style="color:var(--t3);text-align:center;padding:30px;">작품을 클릭하면 상세정보 표시</p></div>
+  </div>
+</div>
+
+<!-- ====== PAGE 5: AI PIPELINE ====== -->
+<div class="page" id="p5">
+  <div class="pipe-flow">
+    <div class="pipe-step"><div class="pipe-num">1</div><div class="pipe-t">데이터 선택</div><div class="pipe-d">모듈·작품 선택</div></div>
+    <div class="pipe-step"><div class="pipe-num">2</div><div class="pipe-t">프롬프트 생성</div><div class="pipe-d">최적화된 프롬프트 구성</div></div>
+    <div class="pipe-step"><div class="pipe-num">3</div><div class="pipe-t">AI 초안 생성</div><div class="pipe-d">Claude API 호출</div></div>
+    <div class="pipe-step"><div class="pipe-num">4</div><div class="pipe-t">검증 & 저장</div><div class="pipe-d">큐레이터 검수 후 저장</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>🔑 API 설정 & 프롬프트</h3>
+      <div class="fg"><label>Anthropic API Key</label><input type="password" id="aikey" placeholder="sk-ant-..."></div>
+      <div class="fg"><label>대상 모듈</label><select id="aimod" style="width:100%;padding:9px;background:var(--bg0);border:1px solid var(--bd);color:var(--t1);border-radius:6px;"></select></div>
+      <div class="fg"><label>추가 지시사항</label><textarea id="aiinst" rows="3" placeholder="예: 20대 대상, 친근한 어조, 비교작품 2개 이상..."></textarea></div>
+      <div class="fg"><label>생성된 프롬프트 (편집 가능)</label><textarea id="aiprompt" rows="8" style="font-size:.72rem;"></textarea></div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-g" onclick="buildPrompt()">📝 프롬프트 생성</button>
+        <button class="btn btn-g" onclick="callAI()">🤖 AI 호출</button>
+      </div>
+      <div id="ai-status" style="font-size:.72rem;color:var(--t3);margin-top:8px;">대기 중</div>
+    </div>
+    <div class="card">
+      <h3>📄 AI 생성 결과</h3>
+      <div style="display:flex;gap:6px;margin-bottom:10px;">
+        <button class="btn btn-gr" onclick="verifyAI()">✅ 검증 완료 표시</button>
+        <button class="btn" onclick="copyAI()">📋 복사</button>
+        <button class="btn" onclick="saveAItoModule()">💾 모듈에 저장</button>
+      </div>
+      <div id="aiout" contenteditable="true" style="background:var(--bg0);border:1px solid var(--bd);border-radius:10px;padding:14px;min-height:300px;max-height:500px;overflow-y:auto;font-family:var(--serif);font-size:.86rem;line-height:1.8;white-space:pre-wrap;">AI 결과가 여기에 표시됩니다. 생성 후 직접 편집 가능합니다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PAGE 6: REHEARSAL ====== -->
+<div class="page" id="p6">
+  <div class="card" style="max-width:650px;margin:0 auto;text-align:center;">
+    <h3>⏱️ 리허설 타이머</h3>
+    <div class="timer-display" id="rh-time">00:00</div>
+    <div id="rh-sec-name" style="font-size:.9rem;color:var(--t2);margin-bottom:16px;">스크립트를 먼저 생성하세요</div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-bottom:18px;">
+      <button class="btn btn-g" onclick="rhStart()">▶ 시작</button>
+      <button class="btn" onclick="rhPause()">⏸ 일시정지</button>
+      <button class="btn" onclick="rhNext()">⏭ 다음</button>
+      <button class="btn btn-r" onclick="rhReset()">⏹ 초기화</button>
+    </div>
+    <div id="rh-list" style="text-align:left;"></div>
+  </div>
+</div>
+
+<!-- ====== PAGE 7: EXPORT ====== -->
+<div class="page" id="p7">
+  <div class="grid2">
+    <div class="card">
+      <h3>📄 TXT / Markdown 내보내기</h3>
+      <p style="font-size:.8rem;color:var(--t2);margin-bottom:12px;">마지막으로 생성한 스크립트를 다양한 형식으로 내보냅니다.</p>
+      <div style="display:flex;gap:6px;"><button class="btn btn-g" onclick="expTxt()">📥 TXT 다운로드</button><button class="btn" onclick="expClip()">📋 클립보드 복사</button></div>
+    </div>
+    <div class="card">
+      <h3>🖨️ 인쇄용 (브라우저 인쇄)</h3>
+      <p style="font-size:.8rem;color:var(--t2);margin-bottom:12px;">Ctrl+P로 PDF 저장 가능합니다.</p>
+      <button class="btn btn-g" onclick="window.print()">🖨️ 인쇄</button>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   DATA LAYER
+   ══════════════════════════════════════════ */
+const DEF={version:"2.0",lastUpdated:"2026-02-22",modules:[
+{id:"W01",category:"western",title:"선사시대 & 고대 근동 미술",period:"BC 30,000 ~ BC 332",hours:8,weekNumber:1,
+coreQuestion:"인류는 왜 그림을 그리기 시작했는가?",
+concepts:["주술적 기능설","비너스 상의 풍요 상징","메갈리스 문화","동굴 벽화의 사회적 기능"],
+references:["Gombrich Ch.1 'Strange Beginnings'","Janson Ch.1","진중권 『서양미술사: 고전예술편』 1장"],
+bridgeText:"동굴의 어둠 속에서 시작된 시각 표현은 도시 문명과 함께 새로운 단계로 나아갑니다.",
+artworks:[
+{id:"W01-A01",title:"라스코 동굴벽화",artist:"작자 미상",year:"BC 17,000경",medium:"동굴 벽면에 천연 안료",dimensions:"대형 홀 약 20m",location:"프랑스 도르도뉴",museum:"라스코 IV 센터 (복제)",imageUrl:"",
+formalAnalysis:{composition:"수평 구도, 동물 행렬이 좌→우 이동하는 운동감",color:"황토색·적갈색·검정의 제한된 팔레트로 농도 조절하여 입체감 구현",brushwork:"손가락 도포, 갈대 붓, 입으로 분사하는 에어브러시 기법",gazeGuide:"대형 홀 입구에서 시계방향: 오로크소 → 사슴 행렬 → 말 → 우물 장면"},
+historicalContext:"구석기 후기(마들렌 문화기), 빙하기 말기. 수렵채집 사회에서 동물은 식량이자 영적 대상. 사냥 기원 주술, 계절 기록 달력, 성년식 공간 장식 등 다양한 해석이 공존합니다.",
+comparativeWorks:["알타미라 동굴벽화 (스페인, BC 15,000경)","쇼베 동굴벽화 (프랑스, BC 32,000경)","인도네시아 술라웨시 동굴벽화 (BC 45,500경)"],
+interactiveQuestion:"횃불 하나 들고 이 동굴에 들어왔다 상상해 보세요. 흔들리는 불빛 아래 소들이 움직이는 것처럼 보이지 않을까요?",
+speakerNote:"⏱ 5분 | 천장 곡면 사진 가리키며 3D 표현 강조. 관객에게 눈 반쯤 감도록 유도.",verified:true,lastModified:"2026-02-22"},
+{id:"W01-A02",title:"빌렌도르프의 비너스",artist:"작자 미상",year:"BC 25,000경",medium:"석회암 조각",dimensions:"높이 11.1cm",location:"오스트리아",museum:"빈 자연사 박물관",imageUrl:"",
+formalAnalysis:{composition:"정면성, 좌우 대칭. 가슴·배·엉덩이 극단적 과장, 얼굴 생략",color:"원래 적색 안료(오커) 흔적 — 생명력·다산 상징",brushwork:"손바닥 안 크기(11.1cm). 부싯돌로 세밀 조각 후 연마",gazeGuide:"정면 실루엣 → 과장된 신체 클로즈업 → 뒷면 꼰 머리카락 디테일"},
+historicalContext:"구석기 후기 그라베트 문화. 유럽 전역에서 유사 비너스 상 200여 점 발견. 다산 상징, 어머니신 숭배, 여성 자화상 등 다양한 해석 공존.",
+comparativeWorks:["레스퓌그의 비너스 (프랑스, BC 23,000경)","호흘레 펠스의 비너스 (독일, BC 35,000경)"],
+interactiveQuestion:"한 손에 쏙 들어오는 이 조각상을 3만 년 전 누군가가 손에 쥐고 무엇을 빌었을까요?",
+speakerNote:"⏱ 4분 | 3D 프린트 복제품 관객에게 돌려보게 하면 효과적. '비너스'는 근대 학자 명명임을 언급.",verified:true,lastModified:"2026-02-22"},
+{id:"W01-A03",title:"스톤헨지",artist:"작자 미상",year:"BC 3,000~2,000경",medium:"사르센(사암) + 블루스톤(현무암)",dimensions:"외곽 원형 지름 33m, 최대 높이 7.3m",location:"영국 윌트셔",museum:"현지 (English Heritage)",imageUrl:"",
+formalAnalysis:{composition:"동심원 배치. 하지 일출 축선과 정확히 정렬",color:"사르센 회백색과 블루스톤 청록색 대비",brushwork:"인텍·모르티스·테넌 결합 기법. 240km 떨어진 웨일스에서 운반",gazeGuide:"비지터 센터에서 접근 시 전체 스카이라인 → 트릴리톤 클로즈업 → 힐스톤"},
+historicalContext:"약 1,500년에 걸쳐 다단계 건설. 천문 관측소, 치유 성지, 조상 숭배 장소 등 해석 다양.",
+comparativeWorks:["카르낙 열석 (프랑스, BC 4,500경)","뉴그레인지 (아일랜드, BC 3,200경)","괴베클리 테페 (튀르키예, BC 9,500경)"],
+interactiveQuestion:"25톤 돌을 240km나 운반한 사람들은 어떤 믿음이 있었기에 이런 일을 해낼 수 있었을까요?",
+speakerNote:"⏱ 4분 | 하지 일출 다이어그램 필수. 한국 고인돌과 비교하면 동서양 연결 효과.",verified:true,lastModified:"2026-02-22"}
+]},
+{id:"W02",category:"western",title:"그리스·로마 미술",period:"BC 800 ~ AD 476",hours:8,weekNumber:2,
+coreQuestion:"왜 그리스인들은 '이상적 인체'에 집착했는가?",
+concepts:["콘트라포스토","고전기 이상주의","헬레니즘 감정 표현","로마 사실주의(Verism)"],
+references:["Gombrich Ch.3-4","Janson Ch.5-7"],bridgeText:"그리스가 세운 미의 이상은 로마를 거쳐 1,000년 후 르네상스에서 부활합니다.",artworks:[]},
+{id:"W03",category:"western",title:"중세 미술",period:"AD 476 ~ 1400",hours:8,weekNumber:3,
+coreQuestion:"중세는 정말 '암흑시대'였는가?",
+concepts:["비잔틴 이콘","고딕 대성당","스테인드글라스의 빛의 신학"],
+references:["Gombrich Ch.6-9"],bridgeText:"고딕 첨탑의 열망은 르네상스의 서막으로 이어집니다.",artworks:[]},
+{id:"W04",category:"western",title:"르네상스 & 매너리즘",period:"1400 ~ 1600",hours:8,weekNumber:4,
+coreQuestion:"르네상스는 왜 피렌체에서 시작되었는가?",
+concepts:["선형 원근법","인문주의","스푸마토·키아로스쿠로"],
+references:["Gombrich Ch.12-16","Vasari 『예술가 열전』"],bridgeText:"완벽한 균형이 깨지며 바로크의 드라마가 시작됩니다.",artworks:[]},
+{id:"W05",category:"western",title:"바로크·로코코 ~ 인상주의 ~ 현대",period:"1600 ~ 현재",hours:16,weekNumber:5,
+coreQuestion:"미술은 왜 '보이는 것'에서 '보이지 않는 것'으로 향했는가?",
+concepts:["테네브리즘","외광 회화","큐비즘","추상표현주의","개념미술"],
+references:["할 포스터 외 『1900년 이후의 미술사』"],bridgeText:"서양미술 여정을 마치고 동양의 시선으로 바라보겠습니다.",artworks:[]},
+{id:"E01",category:"eastern",title:"한국 미술사",period:"선사~현대",hours:10,weekNumber:7,
+coreQuestion:"한국 미술의 '자연주의'와 '해학'은 어디서 비롯되었는가?",
+concepts:["고구려 고분벽화","고려청자","조선 산수화·풍속화","단색화"],
+references:["안휘준 『한국 회화사』","유홍준 『나의 문화유산 답사기』"],bridgeText:"한국 미술을 확인한 뒤 중국 미술로 시선을 넓히겠습니다.",artworks:[]},
+{id:"E02",category:"eastern",title:"중국 미술사",period:"은·상~현대",hours:10,weekNumber:8,
+coreQuestion:"문인화의 '사의'는 서양 추상과 어떻게 다른가?",
+concepts:["갑골문·청동기","산수화 삼원법","문인화"],
+references:["마이클 설리반 『The Arts of China』"],bridgeText:"대륙의 전통 옆에서 일본은 독자적 미의식을 발전시켰습니다.",artworks:[]},
+{id:"E03",category:"eastern",title:"일본 미술사",period:"조몬~현대",hours:10,weekNumber:9,
+coreQuestion:"와비사비·모노노아와레는 일본 미술의 본질인가?",
+concepts:["우키요에","린파","일본 현대미술"],
+references:["페놀로사 『Epochs of Chinese and Japanese Art』"],bridgeText:"동양미술사를 마무리하고 전시기획 실무로 넘어갑니다.",artworks:[]},
+{id:"X01",category:"exhibition",title:"전시 기획 실무",period:"실무",hours:16,weekNumber:13,
+coreQuestion:"좋은 전시 콘셉트란 무엇인가?",
+concepts:["콘셉트 개발","작가 리서치","기획서 작성","공간 디자인","예산 편성"],
+references:["The Artro 가이드","한국문화예술위원회 표준계약서"],bridgeText:"",artworks:[]},
+{id:"X02",category:"exhibition",title:"계약서·서류 작성 실무",period:"실무",hours:8,weekNumber:15,
+coreQuestion:"독립 큐레이터가 반드시 알아야 할 계약서 핵심은?",
+concepts:["전시 참여 계약서","작품 대여 계약서","커미션 계약서","저작권 계약","큐레이터 용역 계약"],
+references:["문체부 표준계약서 12종"],bridgeText:"",artworks:[]},
+{id:"X03",category:"exhibition",title:"도슨트 스크립트 작성법",period:"실무",hours:8,weekNumber:16,
+coreQuestion:"관람객의 마음을 여는 첫 마디는?",
+concepts:["5단계 스크립트 구조","4단계 해설법(관찰→정보→해석→질문)","시간 배분"],
+references:["김인아 『전시 스크립트 쓰기』"],bridgeText:"",artworks:[]}
+],generatedScripts:[],aiPipelineLog:[]};
+
+let D,curMod=null,curArt=null,lastScript=null;
+let rhTimer=null,rhSec=0,rhPaused=true,rhSections=[],rhCur=0;
+
+function load(){const s=localStorage.getItem('dmv2');if(s){try{D=JSON.parse(s)}catch(e){D=JSON.parse(JSON.stringify(DEF))}}else D=JSON.parse(JSON.stringify(DEF));}
+function save(){D.lastUpdated=new Date().toISOString().split('T')[0];localStorage.setItem('dmv2',JSON.stringify(D));stats();}
+function resetAll(){if(confirm('모든 데이터를 초기화하시겠습니까?')){localStorage.removeItem('dmv2');location.reload();}}
+
+function stats(){
+  let ta=0,v=0;D.modules.forEach(m=>(m.artworks||[]).forEach(a=>{ta++;if(a.verified)v++;}));
+  document.getElementById('s-mod').textContent=D.modules.length;
+  document.getElementById('s-art').textContent=ta;
+  document.getElementById('s-scr').textContent=(D.generatedScripts||[]).length;
+  document.getElementById('s-ver').textContent=v;
+}
+
+/* ══════ NAVIGATION ══════ */
+const titles={p1:'📁 데이터 매니저',p2:'📥 JSON 가져오기/내보내기',p3:'📝 확장 스크립트 생성기',p4:'🏛️ 메트로폴리탄 미술관 API',p5:'🤖 AI 파이프라인',p6:'⏱️ 리허설 타이머',p7:'📤 내보내기'};
+function go(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  document.querySelectorAll('.nav-i').forEach(n=>n.classList.remove('on'));
+  event.currentTarget.classList.add('on');
+  document.getElementById('ptitle').textContent=titles[id]||'';
+  if(id==='p2')updPreview();
+}
+
+/* ══════ CHIP TOGGLE ══════ */
+document.addEventListener('click',e=>{
+  if(!e.target.classList.contains('chip'))return;
+  const p=e.target.parentElement;
+  if(['ch-type','ch-aud','ch-tone'].includes(p.id)){
+    p.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+    e.target.classList.add('on');
+  }else{e.target.classList.toggle('on');}
+});
+
+/* ══════ TREE ══════ */
+function renderTree(){
+  const t=document.getElementById('tree');
+  const cats={western:'서양미술사',eastern:'동양미술사',exhibition:'전시기획실무'};
+  let h='';
+  for(const[c,l]of Object.entries(cats)){
+    h+=`<div class="tree-cat">${l}</div>`;
+    D.modules.filter(m=>m.category===c).forEach(m=>{
+      h+=`<div class="tree-i" data-m="${m.id}" onclick="selMod('${m.id}')">📂 ${m.title}</div><div class="tree-ch">`;
+      (m.artworks||[]).forEach(a=>{h+=`<div class="tree-i" data-a="${a.id}" onclick="selArt('${m.id}','${a.id}')">${a.verified?'✅':'📄'} ${a.title}</div>`;});
+      h+='</div>';
+    });
+  }
+  t.innerHTML=h;
+}
+
+function selMod(id){curMod=id;curArt=null;document.querySelectorAll('.tree-i').forEach(e=>e.classList.remove('on'));document.querySelector(`.tree-i[data-m="${id}"]`)?.classList.add('on');const m=D.modules.find(x=>x.id===id);if(m)showModEditor(m);}
+function selArt(mid,aid){curMod=mid;curArt=aid;document.querySelectorAll('.tree-i').forEach(e=>e.classList.remove('on'));document.querySelector(`.tree-i[data-a="${aid}"]`)?.classList.add('on');const m=D.modules.find(x=>x.id===mid),a=m?.artworks?.find(x=>x.id===aid);if(a)showArtEditor(a,m);}
+
+function showModEditor(m){
+  document.getElementById('editor').innerHTML=`
+  <div style="display:flex;gap:6px;margin-bottom:14px;"><button class="btn btn-g" onclick="saveEd()">💾 저장</button><button class="btn" onclick="addArt()">➕ 작품 추가</button><button class="btn btn-r" onclick="delCur()">🗑️ 삭제</button></div>
+  <h3 style="font-family:var(--serif);margin-bottom:14px;">${m.title}</h3>
+  <div class="fg"><label>제목</label><input value="${m.title}" id="e-t"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <div class="fg"><label>시기</label><input value="${m.period}" id="e-p"></div>
+    <div class="fg"><label>카테고리</label><select id="e-cat"><option value="western"${m.category==='western'?' selected':''}>서양</option><option value="eastern"${m.category==='eastern'?' selected':''}>동양</option><option value="exhibition"${m.category==='exhibition'?' selected':''}>전시기획</option></select></div>
+  </div>
+  <div class="fg"><label>핵심 질문</label><textarea id="e-q">${m.coreQuestion}</textarea></div>
+  <div class="fg"><label>핵심 개념 (줄바꿈)</label><textarea id="e-con" rows="3">${(m.concepts||[]).join('\n')}</textarea></div>
+  <div class="fg"><label>참고문헌 (줄바꿈)</label><textarea id="e-ref" rows="3">${(m.references||[]).join('\n')}</textarea></div>
+  <div class="fg"><label>전환 멘트</label><textarea id="e-br">${m.bridgeText||''}</textarea></div>`;
+}
+
+function showArtEditor(a,m){
+  const f=a.formalAnalysis||{};
+  document.getElementById('editor').innerHTML=`
+  <div style="display:flex;gap:6px;margin-bottom:14px;"><button class="btn btn-g" onclick="saveEd()">💾 저장</button><button class="btn btn-r" onclick="delCur()">🗑️ 삭제</button></div>
+  <h3 style="font-family:var(--serif);">🖼️ ${a.title}</h3>
+  <span class="badge">${m.title}</span> <span class="badge" style="${a.verified?'background:rgba(78,203,113,.13);color:var(--green)':'background:rgba(232,147,78,.13);color:var(--orange)'}">${a.verified?'✅ 검증완료':'⏳ 미검증'}</span>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;">
+    <div class="fg"><label>제목</label><input value="${a.title}" id="ea-t"></div>
+    <div class="fg"><label>작가</label><input value="${a.artist}" id="ea-ar"></div>
+    <div class="fg"><label>연도</label><input value="${a.year}" id="ea-y"></div>
+    <div class="fg"><label>매체</label><input value="${a.medium}" id="ea-m"></div>
+    <div class="fg"><label>크기</label><input value="${a.dimensions}" id="ea-d"></div>
+    <div class="fg"><label>소장처</label><input value="${a.museum||''}" id="ea-mu"></div>
+  </div>
+  <div class="fg"><label>이미지 URL</label><input value="${a.imageUrl||''}" id="ea-img"></div>
+  <hr style="border-color:var(--bd);margin:14px 0;">
+  <h4 style="color:var(--cyan);margin-bottom:10px;">🔍 형식 분석</h4>
+  <div class="fg"><label>구도</label><textarea id="ef-co">${f.composition||''}</textarea></div>
+  <div class="fg"><label>색채</label><textarea id="ef-cl">${f.color||''}</textarea></div>
+  <div class="fg"><label>기법</label><textarea id="ef-br">${f.brushwork||''}</textarea></div>
+  <div class="fg"><label>시선 유도</label><textarea id="ef-gz">${f.gazeGuide||''}</textarea></div>
+  <hr style="border-color:var(--bd);margin:14px 0;">
+  <div class="fg"><label>📖 역사 맥락</label><textarea id="ea-ctx" rows="3">${a.historicalContext||''}</textarea></div>
+  <div class="fg"><label>🔄 비교 작품 (줄바꿈)</label><textarea id="ea-cmp" rows="2">${(a.comparativeWorks||[]).join('\n')}</textarea></div>
+  <div class="fg"><label>❓ 관람객 질문</label><textarea id="ea-iq">${a.interactiveQuestion||''}</textarea></div>
+  <div class="fg"><label>🎙️ 도슨트 노트</label><textarea id="ea-sn" rows="2">${a.speakerNote||''}</textarea></div>
+  <div class="fg"><label>검증 상태</label><select id="ea-v"><option value="true"${a.verified?' selected':''}>✅ 완료</option><option value="false"${!a.verified?' selected':''}>⏳ 미검증</option></select></div>`;
+}
+
+function saveEd(){
+  if(curArt){
+    const m=D.modules.find(x=>x.id===curMod),a=m?.artworks?.find(x=>x.id===curArt);if(!a)return;
+    a.title=document.getElementById('ea-t').value;a.artist=document.getElementById('ea-ar').value;
+    a.year=document.getElementById('ea-y').value;a.medium=document.getElementById('ea-m').value;
+    a.dimensions=document.getElementById('ea-d').value;a.museum=document.getElementById('ea-mu').value;
+    a.imageUrl=document.getElementById('ea-img').value;
+    a.formalAnalysis={composition:document.getElementById('ef-co').value,color:document.getElementById('ef-cl').value,brushwork:document.getElementById('ef-br').value,gazeGuide:document.getElementById('ef-gz').value};
+    a.historicalContext=document.getElementById('ea-ctx').value;
+    a.comparativeWorks=document.getElementById('ea-cmp').value.split('\n').filter(s=>s.trim());
+    a.interactiveQuestion=document.getElementById('ea-iq').value;
+    a.speakerNote=document.getElementById('ea-sn').value;
+    a.verified=document.getElementById('ea-v').value==='true';
+    a.lastModified=new Date().toISOString().split('T')[0];
+  }else if(curMod){
+    const m=D.modules.find(x=>x.id===curMod);if(!m)return;
+    m.title=document.getElementById('e-t').value;m.period=document.getElementById('e-p').value;
+    m.category=document.getElementById('e-cat').value;m.coreQuestion=document.getElementById('e-q').value;
+    m.concepts=document.getElementById('e-con').value.split('\n').filter(s=>s.trim());
+    m.references=document.getElementById('e-ref').value.split('\n').filter(s=>s.trim());
+    m.bridgeText=document.getElementById('e-br').value;
+  }
+  save();renderTree();fillSelects();alert('✅ 저장 완료');
+}
+
+function addArt(){
+  if(!curMod){alert('모듈을 먼저 선택하세요');return;}
+  const m=D.modules.find(x=>x.id===curMod);if(!m.artworks)m.artworks=[];
+  const nid=`${m.id}-A${String(m.artworks.length+1).padStart(2,'0')}`;
+  m.artworks.push({id:nid,title:'새 작품',artist:'',year:'',medium:'',dimensions:'',location:'',museum:'',imageUrl:'',formalAnalysis:{composition:'',color:'',brushwork:'',gazeGuide:''},historicalContext:'',comparativeWorks:[],interactiveQuestion:'',speakerNote:'',verified:false,lastModified:new Date().toISOString().split('T')[0]});
+  save();renderTree();selArt(m.id,nid);
+}
+
+function delCur(){
+  if(!confirm('삭제하시겠습니까?'))return;
+  if(curArt){const m=D.modules.find(x=>x.id===curMod);m.artworks=m.artworks.filter(a=>a.id!==curArt);curArt=null;}
+  else if(curMod){D.modules=D.modules.filter(m=>m.id!==curMod);curMod=null;}
+  save();renderTree();fillSelects();document.getElementById('editor').innerHTML='<p style="color:var(--t3);text-align:center;padding:40px;">삭제 완료</p>';
+}
+
+/* ══════ JSON IMPORT/EXPORT ══════ */
+function jImport(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=x=>{try{const d=JSON.parse(x.target.result);if(d.modules){D=d;save();renderTree();fillSelects();alert('✅ 가져오기 완료');}else alert('modules 키가 필요합니다.');}catch(er){alert('파싱 오류:'+er.message);}};r.readAsText(f);}
+function jPaste(){try{const d=JSON.parse(document.getElementById('jpaste').value);if(d.modules){D=d;save();renderTree();fillSelects();alert('✅ 완료');}else alert('형식 오류');}catch(e){alert('오류:'+e.message);}}
+function jMerge(){try{const d=JSON.parse(document.getElementById('jpaste').value);if(d.modules){d.modules.forEach(nm=>{const ex=D.modules.find(m=>m.id===nm.id);if(ex){(nm.artworks||[]).forEach(na=>{if(!ex.artworks.find(a=>a.id===na.id))ex.artworks.push(na);});}else D.modules.push(nm);});save();renderTree();fillSelects();alert('✅ 병합 완료');}else alert('형식 오류');}catch(e){alert('오류:'+e.message);}}
+function jExport(){const sc=document.getElementById('escope').value;let d;if(sc==='all')d=D;else d={...D,modules:D.modules.filter(m=>m.category===sc)};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=`docent_${sc}_${D.lastUpdated}.json`;a.click();URL.revokeObjectURL(u);}
+function jCopy(){const sc=document.getElementById('escope').value;let d;if(sc==='all')d=D;else d={...D,modules:D.modules.filter(m=>m.category===sc)};navigator.clipboard.writeText(JSON.stringify(d,null,2)).then(()=>alert('✅ 복사 완료'));}
+function dlAll(){jExport();}
+function updPreview(){const p=document.getElementById('jprev');if(p)p.value=JSON.stringify(D,null,2).substring(0,3000)+'...';}
+
+/* ══════ SCRIPT GENERATOR ══════ */
+function fillSelects(){
+  ['selmod','aimod'].forEach(sid=>{const s=document.getElementById(sid);if(!s)return;s.innerHTML='<option value="">— 선택 —</option>';
+  const c={western:'서양미술사',eastern:'동양미술사',exhibition:'전시기획'};
+  for(const[k,l]of Object.entries(c)){const g=document.createElement('optgroup');g.label=l;D.modules.filter(m=>m.category===k).forEach(m=>{const o=document.createElement('option');o.value=m.id;o.textContent=m.title;g.appendChild(o);});s.appendChild(g);}});
+}
+
+function onModSel(){
+  const m=D.modules.find(x=>x.id===document.getElementById('selmod').value);
+  const l=document.getElementById('artlist');
+  if(!m||!m.artworks?.length){l.innerHTML='<p style="font-size:.72rem;color:var(--t3);">작품 없음</p>';return;}
+  l.innerHTML=m.artworks.map(a=>`<label style="display:flex;align-items:center;gap:6px;padding:5px 6px;font-size:.76rem;cursor:pointer;"><input type="checkbox" checked value="${a.id}" class="ackb"> ${a.title} <span style="color:var(--t3);font-size:.62rem;">(${a.year})</span></label>`).join('');
+}
+
+function gv(cid){const a=document.querySelector(`#${cid} .chip.on`);return a?a.dataset.v:'';}
+function gvs(cid){return Array.from(document.querySelectorAll(`#${cid} .chip.on`)).map(c=>c.dataset.v);}
+
+  /* ══════ 분량 확장 텍스트 생성 엔진 ══════ */
+const EXPAND = {
+  openingTemplates: [
+    (m) => `안녕하세요, 반갑습니다. 오늘 저와 함께 ${m.title}의 세계를 여행할 시간입니다. 미술관에 오시면 가장 먼저 무엇이 눈에 들어오시나요? 어떤 분은 색채가, 어떤 분은 작품의 크기가, 또 어떤 분은 액자 너머로 느껴지는 시대의 공기가 먼저 와닿는다고 하십니다. 오늘은 그 모든 감각을 열어두고, ${m.period} 시대의 작품들을 함께 만나보려 합니다.`,
+    (m) => m.coreQuestion ? `\n\n오늘 여러분께 하나의 질문을 드리겠습니다. "${m.coreQuestion}" 이 질문에 대한 정답은 없습니다. 다만 오늘 만나볼 작품들 하나하나가 이 질문에 대한 나름의 대답을 들려줄 것입니다. 이 질문을 마음 한켠에 두시고, 작품과 대화하듯 감상해 주시면 좋겠습니다.` : '',
+    (m) => m.concepts?.length ? `\n\n오늘 여행의 길잡이가 될 키워드를 미리 알려드리겠습니다. ${m.concepts.join(', ')} — 이 개념들이 작품 속에서 어떻게 펼쳐지는지 함께 확인해 보시죠. 준비되셨으면, 첫 번째 작품 앞으로 이동하겠습니다.` : ''
+  ],
+
+  contextTemplates: [
+    (m) => `지금 우리가 서 있는 시간은 ${m.period}입니다. 이 시기를 이해하려면 먼저 당시 사람들의 세계관 속으로 들어가야 합니다.`,
+    (m) => m.concepts?.length ? `\n\n이 시대를 관통하는 핵심 개념들을 하나씩 짚어보겠습니다. ${m.concepts.map((c, i) => `${i === 0 ? '첫째' : i === 1 ? '둘째' : i === 2 ? '셋째' : (i+1)+'번째'}로 "${c}"입니다. 이것은 이 시대 미술을 이해하는 데 빠뜨릴 수 없는 개념으로, 이후 작품 해설에서 반복적으로 등장할 것입니다.`).join(' ')}` : '',
+    (m) => `\n\n이러한 시대적 배경을 염두에 두시면, 지금부터 만나볼 작품들이 왜 그런 모습으로 탄생했는지 자연스럽게 이해가 되실 것입니다. 그럼 첫 번째 작품 앞으로 가보겠습니다.`
+  ],
+
+  artworkNarrative(a, index, total) {
+    let t = '';
+
+    // 도입
+    t += index === 0
+      ? `자, 이제 오늘의 첫 번째 작품입니다. 바로 ${a.artist || '작자 미상'}의 "${a.title}"입니다.`
+      : `다음으로 만나볼 ${index + 1}번째 작품은 ${a.artist || '작자 미상'}의 "${a.title}"입니다.`;
+
+    t += ` ${a.year}에 제작된 이 작품은 ${a.medium || ''}${a.medium ? '(으)로 만들어졌으며' : ''} 현재 ${a.museum || a.location || ''}에 소장되어 있습니다.`;
+
+    if (a.dimensions) {
+      t += ` 작품의 크기는 ${a.dimensions}${a.dimensions.includes('cm') || a.dimensions.includes('m') ? '입니다.' : '입니다.'} `;
+      t += '실제로 보시면 도판으로 보는 것과는 전혀 다른 압도감을 느끼실 수 있습니다.';
+    }
+
+    // 역사 맥락 확장
+    t += '\n\n';
+    if (a.historicalContext) {
+      t += `이 작품이 만들어진 배경을 먼저 살펴보겠습니다. ${a.historicalContext}`;
+      t += ' 이러한 시대적 맥락을 알고 나면, 작품을 바라보는 눈이 달라집니다. 단순한 조형물이 아니라, 그 시대 사람들의 생각과 믿음과 두려움이 응축된 기록으로 읽히기 시작합니다.';
+    } else {
+      t += `이 작품이 만들어진 ${a.year} 무렵의 사회적·문화적 배경은 작품을 이해하는 핵심 열쇠입니다. 당시의 세계관, 기술 수준, 사회적 요구가 모두 이 작품의 형태에 영향을 미쳤습니다.`;
+    }
+
+    return t;
+  },
+
+  formalExpand(fa) {
+    let t = '\n\n이제 작품을 좀 더 자세히 들여다보겠습니다.\n\n';
+
+    if (fa.composition) {
+      t += `먼저 구도를 보겠습니다. ${fa.composition} 작가가 화면을 이렇게 구성한 데에는 분명한 의도가 있습니다. 관람자의 시선을 어디로 유도할 것인지, 어떤 감정을 불러일으킬 것인지를 치밀하게 계산한 결과입니다.\n\n`;
+    }
+
+    if (fa.color) {
+      t += `색채를 살펴보면, ${fa.color} 색은 단순한 장식이 아니라 하나의 언어입니다. 이 작품에서 색채가 전달하는 메시지를 천천히 읽어보시기 바랍니다.\n\n`;
+    }
+
+    if (fa.brushwork) {
+      t += `기법적 측면에서 보면, ${fa.brushwork} 이러한 기법은 당시의 기술적 조건과 작가의 예술적 의도가 만나는 지점에서 탄생한 것입니다.\n\n`;
+    }
+
+    if (fa.gazeGuide) {
+      t += `이 작품을 감상하실 때 시선의 순서를 제안드리겠습니다. ${fa.gazeGuide} 이 순서대로 보시면 작가가 의도한 서사를 자연스럽게 따라가실 수 있습니다.\n\n`;
+    }
+
+    return t;
+  },
+
+  comparativeExpand(works) {
+    let t = '이 작품을 더 깊이 이해하기 위해, 함께 비교할 만한 작품들을 소개하겠습니다.\n\n';
+    works.forEach((w, i) => {
+      t += `${i === 0 ? '첫 번째' : i === 1 ? '두 번째' : (i+1)+'번째'} 비교작은 ${w}입니다. `;
+      t += i === 0
+        ? '이 작품과 나란히 놓고 보면, 같은 시대 혹은 같은 주제를 다루면서도 접근 방식이 어떻게 다른지 흥미로운 차이가 드러납니다.\n\n'
+        : '이 작품과의 비교를 통해 우리가 지금 보고 있는 작품만의 독자적인 위치를 더욱 명확하게 파악하실 수 있을 것입니다.\n\n';
+    });
+    return t;
+  },
+
+  interactiveExpand(q) {
+    return `여기서 잠시, 여러분께 질문을 하나 드리겠습니다.\n\n${q}\n\n정답이 있는 질문이 아닙니다. 각자의 경험과 감성에 따라 전혀 다른 답이 나올 수 있고, 그것이 바로 미술 감상의 매력입니다. 잠시 생각해 보시고, 옆에 계신 분과 이야기 나누셔도 좋습니다.\n\n`;
+  },
+
+  bridgeExpand(current, next) {
+    return `"${current.title}"을(를) 충분히 감상하셨으리라 생각합니다. 이 작품이 전해준 이야기를 마음에 담아두시고, 이제 다음 작품으로 이동하겠습니다. 다음에 만나볼 "${next.title}"은(는) 지금 보신 작품과는 또 다른 세계를 보여줄 것입니다. 어떤 점이 같고 어떤 점이 다른지 비교하며 감상해 보시기 바랍니다.\n\n`;
+  },
+
+  closingTemplates: [
+    (m, count) => `오늘 총 ${count}점의 작품을 함께 감상하셨습니다. ${m.title}이라는 큰 주제 아래 각기 다른 이야기를 가진 작품들을 만나보셨는데, 어떠셨나요?`,
+    (m) => m.coreQuestion ? `\n\n오늘 처음에 드렸던 질문을 다시 꺼내보겠습니다. "${m.coreQuestion}" 해설을 듣기 전과 후, 이 질문에 대한 여러분의 생각이 조금이라도 달라지셨다면, 오늘 여행은 성공입니다. 물론 정답은 없습니다. 미술사의 매력은 바로 하나의 질문이 수백 가지 답을 품고 있다는 점에 있으니까요.` : '',
+    () => `\n\n오늘 보신 작품들을 기억하실 때, 제가 말씀드린 정보보다 여러분이 직접 느끼신 감정과 인상을 더 소중히 간직해 주세요. 그것이 진정한 미술 감상의 핵심입니다. 다음에 미술관에서 다시 만나뵙겠습니다. 함께해 주셔서 진심으로 감사합니다.`
+  ],
+
+  speakerNoteExpand(note) {
+    return `[도슨트 참고] ${note}`;
+  }
+};
+
+/* ══════ A4 분량 계산 ══════ */
+// A4 1장 ≈ 한글 기준 약 1,400~1,800자 (11pt, 줄간격 160%)
+// 보수적으로 1,500자/장 기준
+const A4_CHARS = 1500;
+
+function genScript(){
+  const mid=document.getElementById('selmod').value,m=D.modules.find(x=>x.id===mid);
+  if(!m){alert('모듈을 선택하세요');return;}
+  const type=gv('ch-type'),dur=+document.getElementById('dur').value,aud=gv('ch-aud'),tone=gv('ch-tone'),els=gvs('ch-el');
+  const sIds=Array.from(document.querySelectorAll('.ackb:checked')).map(c=>c.value);
+  const arts=(m.artworks||[]).filter(a=>sIds.includes(a.id));
+  const mpa=arts.length?Math.floor((dur-6)/arts.length):dur;
+
+  // 목표 분량 (A4 장수) 가져오기
+  const targetPages = parseInt(document.getElementById('target-pages')?.value || '4');
+  const targetChars = targetPages * A4_CHARS;
+
+  let h='',plainText='',out=document.getElementById('sout');
+  rhSections=[];
+
+  // Header
+  h+=`<div style="margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--bd);">
+    <h2 style="font-family:var(--serif);">${m.title}</h2>
+    <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+      <span class="badge">${type==='docent'?'도슨트 해설':type==='lecture'?'강의':'기획 발표'}</span>
+      <span class="badge" style="background:rgba(91,141,239,.13);color:var(--blue);">${dur}분</span>
+      <span class="badge" style="background:rgba(78,203,113,.13);color:var(--green);">${aud}</span>
+      <span class="badge" style="background:rgba(166,120,232,.13);color:var(--purple);">목표 A4 ${targetPages}장 (${targetChars.toLocaleString()}자)</span>
+    </div>
+  </div>`;
+
+  // ── OPENING
+  if(els.includes('opening')){
+    let txt = EXPAND.openingTemplates.map(fn => fn(m)).join('');
+    h+=sb('','🎤 오프닝',nl2br(txt),'2~3분');
+    plainText += txt + '\n\n';
+    rhSections.push({name:'오프닝',min:3});
+  }
+
+  // ── CONTEXT
+  if(els.includes('context')){
+    let txt = EXPAND.contextTemplates.map(fn => fn(m)).join('');
+    h+=sb('ctx','📖 시대 맥락',nl2br(txt),'3~4분');
+    plainText += txt + '\n\n';
+    rhSections.push({name:'시대 맥락',min:4});
+  }
+
+  // ── ARTWORKS
+  arts.forEach((a,i)=>{
+    if(els.includes('artwork')){
+      // 작품 헤더
+      h+=`<div style="margin:22px 0 6px;padding-top:14px;border-top:2px solid var(--bd);">
+        <h3 style="font-family:var(--serif);">${i+1}. ${a.title}</h3>
+        <div style="font-size:.72rem;color:var(--t3);margin-top:3px;">
+          ${a.artist} | ${a.year} | ${a.medium} | ${a.museum||''}
+        </div>
+        ${a.imageUrl?`<img src="${a.imageUrl}" style="max-width:100%;border-radius:10px;margin:10px 0;">`:''}</div>`;
+
+      // 작품 해설 (확장)
+      let artTxt = EXPAND.artworkNarrative(a, i, arts.length);
+      h+=sb('art','🖼️ 작품 해설',nl2br(artTxt),mpa+'분');
+      plainText += artTxt + '\n\n';
+      rhSections.push({name:a.title,min:mpa});
+    }
+
+    // 형식 분석 (확장)
+    if(els.includes('formal')&&a.formalAnalysis){
+      const fa = a.formalAnalysis;
+      if(fa.composition||fa.color||fa.brushwork||fa.gazeGuide){
+        let fTxt = EXPAND.formalExpand(fa);
+        h+=sb('formal','🔍 형식 분석',nl2br(fTxt),'');
+        plainText += fTxt + '\n\n';
+      }
+    }
+
+    // 비교 작품 (확장)
+    if(els.includes('comparative')&&a.comparativeWorks?.length){
+      let cTxt = EXPAND.comparativeExpand(a.comparativeWorks);
+      h+=sb('ctx','🔄 비교 작품',nl2br(cTxt),'');
+      plainText += cTxt + '\n\n';
+    }
+
+    // 관람객 질문 (확장)
+    if(els.includes('interactive')&&a.interactiveQuestion){
+      let iTxt = EXPAND.interactiveExpand(a.interactiveQuestion);
+      h+=sb('inter','❓ 관람객 참여',nl2br(iTxt),'');
+      plainText += iTxt + '\n\n';
+    }
+
+    // 도슨트 노트
+    if(els.includes('note')&&a.speakerNote){
+      let nTxt = EXPAND.speakerNoteExpand(a.speakerNote);
+      h+=sb('note','🎙️ 도슨트 노트 [비공개]',nl2br(nTxt),'');
+      plainText += nTxt + '\n\n';
+    }
+
+    // 전환 멘트 (확장)
+    if(els.includes('bridge')&&i<arts.length-1){
+      let bTxt = EXPAND.bridgeExpand(a, arts[i+1]);
+      h+=sb('bridge','➡️ 전환',nl2br(bTxt),'');
+      plainText += bTxt + '\n\n';
+    }
+  });
+
+  // 모듈 전환 멘트
+  if(els.includes('bridge')&&m.bridgeText){
+    h+=sb('bridge','➡️ 시대 전환',nl2br(m.bridgeText),'');
+    plainText += m.bridgeText + '\n\n';
+  }
+
+  // ── CLOSING
+  if(els.includes('closing')){
+    let cTxt = EXPAND.closingTemplates.map(fn => fn(m, arts.length)).join('');
+    h+=sb('','🎬 클로징',nl2br(cTxt),'2~3분');
+    plainText += cTxt + '\n\n';
+    rhSections.push({name:'클로징',min:3});
+  }
+
+  // ── REFERENCES
+  if(els.includes('refs')&&m.references?.length){
+    h+=`<div class="sblock" style="border-left-color:var(--t3);background:rgba(255,255,255,.02);">
+      <div class="sblock-lb" style="color:var(--t3);">📚 참고문헌</div>
+      <div style="font-size:.76rem;color:var(--t2);">${m.references.map(r=>'• '+r).join('<br>')}</div>
+    </div>`;
+    plainText += '참고문헌:\n' + m.references.map(r=>'• '+r).join('\n') + '\n\n';
+  }
+
+  // ── 분량 통계
+  const pureLen = plainText.replace(/\s/g,'').length;
+  const pureWithSpaces = plainText.length;
+  const pages = (pureLen / A4_CHARS).toFixed(1);
+  const minutes = Math.round(pureLen / 300);
+  const pct = Math.min(100, Math.round((pureLen / targetChars) * 100));
+  const pctColor = pct >= 90 ? 'var(--green)' : pct >= 60 ? 'var(--orange)' : 'var(--red)';
+
+  h+=`<div style="margin-top:20px;padding:16px;border:1px solid var(--bd);border-radius:10px;background:var(--bg0);">
+    <div style="font-size:.72rem;font-weight:700;color:var(--gold);margin-bottom:10px;">📊 분량 분석</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;">
+      <div style="text-align:center;"><div style="font-size:1.3rem;font-weight:900;color:var(--t1);">${pureLen.toLocaleString()}</div><div style="font-size:.62rem;color:var(--t3);">순수 글자수 (공백제외)</div></div>
+      <div style="text-align:center;"><div style="font-size:1.3rem;font-weight:900;color:var(--blue);">${pages}</div><div style="font-size:.62rem;color:var(--t3);">A4 환산 (장)</div></div>
+      <div style="text-align:center;"><div style="font-size:1.3rem;font-weight:900;color:var(--purple);">${minutes}</div><div style="font-size:.62rem;color:var(--t3);">예상 발화 (분)</div></div>
+      <div style="text-align:center;"><div style="font-size:1.3rem;font-weight:900;color:${pctColor};">${pct}%</div><div style="font-size:.62rem;color:var(--t3);">목표 달성률</div></div>
+    </div>
+    <div style="background:var(--bg2);border-radius:6px;height:8px;overflow:hidden;">
+      <div style="height:100%;width:${pct}%;background:${pctColor};border-radius:6px;transition:width .5s;"></div>
+    </div>
+    <div style="font-size:.65rem;color:var(--t3);margin-top:6px;">목표: A4 ${targetPages}장 (${targetChars.toLocaleString()}자) | 현재: ${pureLen.toLocaleString()}자 (${pct}%)</div>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="btn" onclick="expTxt()">📥 TXT</button>
+      <button class="btn" onclick="expClip()">📋 복사</button>
+    </div>
+  </div>`;
+
+  out.innerHTML=h;
+  lastScript=plainText;
+  D.generatedScripts.push({date:new Date().toISOString(),module:m.title,type,duration:dur,chars:pureLen,pages:parseFloat(pages)});
+  save();
+  renderRhList();
+}
+
+function nl2br(str){ return (str||'').replace(/\n/g,'<br>'); }
+
+function sb(cls,label,text,time){
+  return`<div class="sblock ${cls}"><div class="sblock-lb">${label}${time?`<span class="time-b">⏱ ${time}</span>`:''}</div><div class="sblock-tx">${text}</div></div>`;
+}
+
+/* ══════ MET API ══════ */
+async function metSearch(){
+  const q=document.getElementById('met-q').value.trim();if(!q){alert('검색어를 입력하세요');return;}
+  const dept=document.getElementById('met-dept').value,hl=document.getElementById('met-hl').value;
+  document.getElementById('met-status').textContent='🔍 검색 중...';
+  let url=`https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=${encodeURIComponent(q)}`;
+  if(dept)url+=`&departmentId=${dept}`;if(hl)url+=`&isHighlight=${hl}`;
+  try{
+    const res=await fetch(url),data=await res.json();
+    if(!data.objectIDs?.length){document.getElementById('met-grid').innerHTML='<p style="color:var(--t3);grid-column:1/-1;text-align:center;padding:20px;">결과 없음</p>';document.getElementById('met-status').textContent='결과 없음';document.getElementById('met-cnt').textContent='';return;}
+    document.getElementById('met-cnt').textContent=`총 ${data.total}건 (상위 20개 표시)`;
+    document.getElementById('met-status').textContent=`✅ ${data.total}건 발견`;
+    const ids=data.objectIDs.slice(0,20);
+    const grid=document.getElementById('met-grid');grid.innerHTML='';
+    for(const id of ids){
+      try{
+        const r2=await fetch(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${id}`),obj=await r2.json();
+        const img=obj.primaryImageSmall||'';
+        const card=document.createElement('div');card.className='art-card';
+        card.innerHTML=`${img?`<img src="${img}" loading="lazy" alt="${obj.title}">`:`<div style="height:150px;background:var(--bg0);display:flex;align-items:center;justify-content:center;color:var(--t3);">🖼️</div>`}<div class="info"><div class="t">${obj.title||'제목 없음'}</div><div class="a">${obj.artistDisplayName||obj.culture||''}</div><div class="a">${obj.objectDate||''}</div></div>`;
+        card.onclick=()=>showMetDetail(obj);
+        grid.appendChild(card);
+      }catch(e){}
+    }
+  }catch(e){document.getElementById('met-status').textContent='❌ 오류: '+e.message;}
+}
+
+/* ★ 시대 자동매칭 엔진 — 이 부분만 v2.0에 추가 ★ */
+
+const ERA_RULES = [
+  { moduleId:'W01', label:'선사·고대 근동', min:-100000, max:-332,
+    depts:['Egyptian Art','Ancient Near Eastern Art'],
+    hints:['egyptian','sumerian','babylonian','prehistoric'] },
+  { moduleId:'W02', label:'그리스·로마', min:-800, max:476,
+    depts:['Greek and Roman Art'],
+    hints:['greek','roman','etruscan','hellenistic'] },
+  { moduleId:'W03', label:'중세', min:476, max:1400,
+    depts:['Medieval Art','The Cloisters'],
+    hints:['byzantine','romanesque','gothic','medieval'] },
+  { moduleId:'W04', label:'르네상스·매너리즘', min:1400, max:1600,
+    depts:[],
+    hints:['renaissance','florentine','venetian','manneris'] },
+  { moduleId:'W05', label:'바로크~현대', min:1600, max:2100,
+    depts:['European Paintings','Modern Art','Photographs'],
+    hints:['baroque','rococo','impressionist','modern','contemporary'] },
+  { moduleId:'E01', label:'한국 미술', min:-100000, max:2100,
+    depts:[],
+    hints:['korean','korea','goryeo','joseon','silla','baekje','goguryeo'] },
+  { moduleId:'E02', label:'중국 미술', min:-100000, max:2100,
+    depts:[],
+    hints:['chinese','china','ming','qing','song','tang','yuan','shang','zhou'] },
+  { moduleId:'E03', label:'일본 미술', min:-100000, max:2100,
+    depts:[],
+    hints:['japanese','japan','edo','meiji','heian','kamakura','ukiyo'] },
+];
+
+function matchEra(obj) {
+  const begin = obj.objectBeginDate;
+  const dept = (obj.department || '').toLowerCase();
+  const combined = [obj.culture, obj.period, obj.department,
+                    obj.artistNationality, obj.title]
+                    .map(s => (s||'').toLowerCase()).join(' ');
+
+  let best = null, bestScore = -1;
+
+  for (const rule of ERA_RULES) {
+    let score = 0;
+
+    // 1) 연도 매칭
+    if (begin != null && !isNaN(begin)) {
+      if (begin >= rule.min && begin < rule.max) {
+        score += ['E01','E02','E03'].includes(rule.moduleId) ? 5 : 30;
+      }
+    }
+
+    // 2) 부서 매칭
+    for (const d of rule.depts) {
+      if (dept.includes(d.toLowerCase())) score += 25;
+    }
+
+    // 3) 문화·키워드 매칭
+    for (const h of rule.hints) {
+      if (combined.includes(h)) score += 20;
+    }
+
+    if (score > bestScore) { bestScore = score; best = rule; }
+  }
+
+  // Asian Art 부서 fallback
+  if (dept.includes('asian art') && best && !best.moduleId.startsWith('E')) {
+    if (combined.match(/korea|goryeo|joseon|silla/)) best = ERA_RULES.find(r=>r.moduleId==='E01');
+    else if (combined.match(/china|chinese|ming|qing|song|tang/)) best = ERA_RULES.find(r=>r.moduleId==='E02');
+    else if (combined.match(/japan|japanese|edo|meiji/)) best = ERA_RULES.find(r=>r.moduleId==='E03');
+    else best = ERA_RULES.find(r=>r.moduleId==='E02');
+  }
+
+  // 최종 fallback
+  if (!best || bestScore === 0) {
+    if (begin != null && !isNaN(begin)) {
+      for (const r of ERA_RULES.filter(r=>r.moduleId.startsWith('W'))) {
+        if (begin >= r.min && begin < r.max) { best = r; break; }
+      }
+    }
+    if (!best) best = ERA_RULES[4];
+  }
+
+  const confidence = bestScore >= 30 ? '높음' : bestScore >= 15 ? '보통' : '낮음';
+  return { rule: best, score: bestScore, confidence };
+}
+
+/* ══════ df 헬퍼 함수 추가 ══════ */
+function df(l,v){return v?`<div class="df"><div class="dl">${l}</div><div class="dv">${v}</div></div>`:'';}
+
+/* ══════ 임시 저장소: 클릭한 작품 객체 보관 ══════ */
+let _lastMetObj = null;
+
+function showMetDetail(o) {
+  _lastMetObj = o;
+  const match = matchEra(o);
+  const conf = match.confidence;
+  const confColor = conf==='높음' ? 'var(--green)' : conf==='보통' ? 'var(--orange)' : 'var(--red)';
+  const confIcon = conf==='높음' ? '🟢' : conf==='보통' ? '🟡' : '🔴';
+
+  const p = document.getElementById('met-detail');
+  p.innerHTML = `
+    ${o.primaryImage ? `<img src="${o.primaryImage}" alt="" style="width:100%;border-radius:10px;margin-bottom:14px;">` : ''}
+    <h3 style="font-family:var(--serif);margin-bottom:12px;">${o.title||'제목 없음'}</h3>
+    ${df('작가', o.artistDisplayName)}
+    ${df('연도', o.objectDate)}
+    ${df('매체', o.medium)}
+    ${df('크기', o.dimensions)}
+    ${df('부서', o.department)}
+    ${df('문화', o.culture)}
+    ${df('시대', o.period)}
+    ${df('국적', o.artistNationality)}
+
+    <div style="background:var(--bg0);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-top:16px;">
+      <div style="font-size:.72rem;font-weight:700;color:var(--gold);margin-bottom:10px;">
+        🎯 시대 자동매칭 결과
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <span style="font-size:1.2rem;">${confIcon}</span>
+        <div>
+          <div style="font-size:.9rem;font-weight:700;">${match.rule.label}</div>
+          <div style="font-size:.68rem;color:${confColor};">신뢰도: ${conf} (점수: ${match.score})</div>
+        </div>
+      </div>
+      <div style="font-size:.72rem;color:var(--t3);margin-bottom:10px;">
+        매칭 근거: 연도 ${o.objectBeginDate!=null?o.objectBeginDate:'?'}~${o.objectEndDate!=null?o.objectEndDate:'?'}
+        ${o.department ? ' | 부서: '+o.department : ''}
+        ${o.culture ? ' | 문화: '+o.culture : ''}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:.72rem;color:var(--t2);">배정 모듈:</span>
+        <select id="manual-match" style="flex:1;background:var(--bg0);border:1px solid var(--bd);color:var(--t1);padding:6px;border-radius:6px;font-size:.78rem;">
+          ${D.modules.map(m =>
+            '<option value="'+m.id+'"'+(m.id===match.rule.moduleId?' selected':'')+'>'+m.id+' — '+m.title+'</option>'
+          ).join('')}
+        </select>
+      </div>
+      <button class="btn btn-g" style="width:100%;" onclick="doImport()">
+        📥 이 모듈에 가져오기
+      </button>
+    </div>
+  `;
+}
+
+function doImport() {
+  const o = _lastMetObj;
+  if (!o) { alert('작품 정보가 없습니다. 다시 클릭해 주세요.'); return; }
+
+  const targetId = document.getElementById('manual-match').value;
+  const m = D.modules.find(x => x.id === targetId);
+  if (!m) { alert('모듈을 찾을 수 없습니다'); return; }
+  if (!m.artworks) m.artworks = [];
+
+  const nid = m.id + '-MET' + o.objectID;
+  if (m.artworks.find(a => a.id === nid)) { alert('이미 가져온 작품입니다'); return; }
+
+  m.artworks.push({
+    id: nid,
+    title: o.title || '',
+    artist: o.artistDisplayName || '',
+    year: o.objectDate || '',
+    medium: o.medium || '',
+    dimensions: o.dimensions || '',
+    location: o.country || '',
+    museum: 'The Metropolitan Museum of Art',
+    imageUrl: o.primaryImageSmall || '',
+    formalAnalysis: { composition:'', color:'', brushwork:'', gazeGuide:'' },
+    historicalContext: [o.artistDisplayBio||'', o.period ? '시대: '+o.period : '', o.culture ? '문화: '+o.culture : ''].filter(Boolean).join(' | '),
+    comparativeWorks: [],
+    interactiveQuestion: '',
+    speakerNote: '',
+    verified: false,
+    lastModified: new Date().toISOString().split('T')[0]
+  });
+
+  save(); renderTree(); fillSelects();
+  alert('✅ "' + o.title + '"\n→ [' + m.id + '] ' + m.title + ' 모듈에 저장 완료');
+}
+
+/* ══════ AI PIPELINE ══════ */
+function buildPrompt(){
+  const mid=document.getElementById('aimod').value,m=D.modules.find(x=>x.id===mid);
+  if(!m){alert('모듈을 선택하세요');return;}
+  const inst=document.getElementById('aiinst').value;
+  const p=`당신은 25년 경력의 큐레이터이자 전문 도슨트입니다.
+
+다음 모듈 데이터를 바탕으로 40분 분량의 도슨트 스크립트를 작성하세요.
+
+== 모듈 정보 ==
+제목: ${m.title}
+시기: ${m.period}
+핵심 질문: ${m.coreQuestion}
+핵심 개념: ${(m.concepts||[]).join(', ')}
+
+== 등록된 작품 ==
+${(m.artworks||[]).map((a,i)=>`${i+1}. ${a.title} (${a.artist}, ${a.year}) — ${a.medium}
+   소장: ${a.museum||a.location||''}
+   맥락: ${a.historicalContext||'(미입력)'}
+`).join('\n')}
+
+== 스크립트 요구사항 ==
+1. 각 작품별로 포함: 형식분석(구도/색채/기법/시선유도), 역사맥락, 비교작품 2개, 관람객 참여 질문 1개
+2. 오프닝(핵심 질문 제시)과 클로징(질문 회수) 포함
+3. 작품 간 전환 멘트 포함
+4. 각 섹션에 ⏱ 시간 표시
+5. 도슨트 노트(제스처, 강조점, 타이밍 힌트)를 [NOTE] 태그로 표시
+${inst?'\n== 추가 지시사항 ==\n'+inst:''}
+
+전문적이면서도 따뜻한 어조로 작성하세요.`;
+  document.getElementById('aiprompt').value=p;
+}
+
+async function callAI(){
+  const key=document.getElementById('aikey').value.trim();
+  if(!key){alert('API 키를 입력하세요');return;}
+  const prompt=document.getElementById('aiprompt').value;
+  if(!prompt){alert('먼저 프롬프트를 생성하세요');return;}
+  document.getElementById('ai-status').innerHTML='<span style="color:var(--orange);">🔄 AI 생성 중... (30초~2분 소요)</span>';
+  document.getElementById('aiout').textContent='생성 중...';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'x-api-key':key,'anthropic-version':'2023-06-01','content-type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-5-5',max_tokens:4000,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    if(data.content?.[0]?.text){
+      document.getElementById('aiout').textContent=data.content[0].text;
+      document.getElementById('ai-status').innerHTML='<span style="color:var(--green);">✅ 생성 완료</span>';
+      D.aiPipelineLog.push({date:new Date().toISOString(),module:document.getElementById('aimod').value,status:'generated'});save();
+    }else{
+      document.getElementById('aiout').textContent='오류: '+JSON.stringify(data);
+      document.getElementById('ai-status').innerHTML='<span style="color:var(--red);">❌ 오류</span>';
+    }
+  }catch(e){
+    document.getElementById('aiout').textContent='네트워크 오류: '+e.message;
+    document.getElementById('ai-status').innerHTML='<span style="color:var(--red);">❌ '+e.message+'</span>';
+  }
+}
+
+function verifyAI(){const t=document.getElementById('aiout').textContent;if(t&&t!=='AI 결과가 여기에 표시됩니다.'){alert('✅ 검증 완료로 표시되었습니다.');D.aiPipelineLog.push({date:new Date().toISOString(),status:'verified'});save();}}
+function copyAI(){navigator.clipboard.writeText(document.getElementById('aiout').textContent).then(()=>alert('✅ 복사'));}
+function saveAItoModule(){alert('AI 결과를 확인한 뒤, 데이터 매니저에서 해당 작품의 각 필드에 직접 붙여넣어 주세요.\n\n(작품 선택 → 각 필드에 텍스트 붙여넣기 → 저장)');}
+
+/* ══════ REHEARSAL TIMER ══════ */
+function renderRhList(){
+  const l=document.getElementById('rh-list');if(!rhSections.length){l.innerHTML='<p style="color:var(--t3);font-size:.8rem;">스크립트를 먼저 생성하세요</p>';return;}
+  l.innerHTML=rhSections.map((s,i)=>`<div class="rh-section${i===rhCur?' active':''}" id="rhs-${i}"><span>${s.name}</span><span style="color:var(--gold);font-size:.72rem;">${s.min}분</span></div>`).join('');
+  document.getElementById('rh-sec-name').textContent=rhSections[rhCur]?.name||'';
+}
+function rhStart(){if(!rhSections.length)return;rhPaused=false;if(!rhTimer)rhTimer=setInterval(()=>{if(rhPaused)return;rhSec++;const m=Math.floor(rhSec/60),s=rhSec%60;document.getElementById('rh-time').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;const lim=rhSections[rhCur]?.min*60;if(lim&&rhSec>=lim)document.getElementById('rh-time').style.color='var(--red)';},1000);}
+function rhPause(){rhPaused=true;}
+function rhNext(){if(rhCur<rhSections.length-1){document.getElementById(`rhs-${rhCur}`)?.classList.add('done');document.getElementById(`rhs-${rhCur}`)?.classList.remove('active');rhCur++;rhSec=0;document.getElementById('rh-time').style.color='var(--gold)';document.getElementById(`rhs-${rhCur}`)?.classList.add('active');document.getElementById('rh-sec-name').textContent=rhSections[rhCur]?.name||'';}}
+function rhReset(){clearInterval(rhTimer);rhTimer=null;rhSec=0;rhPaused=true;rhCur=0;document.getElementById('rh-time').textContent='00:00';document.getElementById('rh-time').style.color='var(--gold)';renderRhList();}
+/* ══════ SCRIPT MANAGER ══════ */
+function showScriptManager(){
+  const list = D.generatedScripts || [];
+  if(!list.length){
+    alert('생성된 스크립트가 없습니다.');
+    return;
+  }
+  let h = `<div style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
+    <h3 style="font-family:var(--serif);">📋 생성된 스크립트 목록 (${list.length}개)</h3>
+    <button class="btn btn-r" onclick="deleteAllScripts()">🗑️ 전체 삭제</button>
+  </div>`;
+  list.forEach((s, i) => {
+    const date = s.date ? new Date(s.date).toLocaleString('ko-KR') : '날짜 없음';
+    h += `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;margin-bottom:6px;background:var(--bg0);border:1px solid var(--bd);border-radius:8px;">
+      <div>
+        <div style="font-size:.82rem;font-weight:600;">${s.module || '모듈 없음'}</div>
+        <div style="font-size:.68rem;color:var(--t3);">${date} · ${s.type || ''} · ${s.duration || '?'}분</div>
+      </div>
+      <button class="btn btn-r" onclick="deleteScript(${i})" style="padding:4px 10px;font-size:.68rem;">🗑️ 삭제</button>
+    </div>`;
+  });
+  document.getElementById('editor').innerHTML = h;
+}
+
+function deleteScript(index){
+  if(!confirm('이 스크립트 기록을 삭제하시겠습니까?')) return;
+  D.generatedScripts.splice(index, 1);
+  save(); renderTree();
+  showScriptManager();
+}
+
+function deleteAllScripts(){
+  if(!confirm('생성된 스크립트 기록을 모두 삭제하시겠습니까?')) return;
+  D.generatedScripts = [];
+  lastScript = null;
+  save(); renderTree();
+  document.getElementById('editor').innerHTML = '<p style="color:var(--t3);text-align:center;padding:40px;">✅ 전체 삭제 완료</p>';
+}
+
+/* ══════ EXPORT ══════ */
+function expTxt(){if(!lastScript){alert('스크립트를 먼저 생성하세요');return;}const b=new Blob([lastScript],{type:'text/plain'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=`도슨트_스크립트_${D.lastUpdated}.txt`;a.click();URL.revokeObjectURL(u);}
+function expClip(){if(!lastScript){alert('스크립트를 먼저 생성하세요');return;}navigator.clipboard.writeText(lastScript).then(()=>alert('✅ 클립보드 복사'));}
+
+/* ══════ INIT ══════ */
+load();stats();renderTree();fillSelects();
+</script>
+</body>
+</html>
